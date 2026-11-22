@@ -1,1 +1,2441 @@
+```html
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CBSE Class 10 Maths Studio | Sunny Rathee</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #070b14;
+      --bg-secondary: #0d1424;
+      --bg-card: rgba(17, 25, 45, 0.78);
+      --bg-card-solid: #11192d;
+      --bg-elevated: rgba(25, 37, 66, 0.85);
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --accent: #6366f1;
+      --accent-2: #06b6d4;
+      --gold: #f59e0b;
+      --success: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --border: rgba(148, 163, 184, 0.16);
+      --glow: 0 0 32px rgba(99, 102, 241, 0.25);
+      --radius: 16px;
+      --transition: all 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+    }
 
+    [data-theme="light"] {
+      --bg-primary: #f4f7fc;
+      --bg-secondary: #ffffff;
+      --bg-card: rgba(255, 255, 255, 0.9);
+      --bg-card-solid: #ffffff;
+      --bg-elevated: #eef2ff;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #64748b;
+      --border: rgba(15, 23, 42, 0.12);
+      --glow: 0 10px 30px rgba(99, 102, 241, 0.15);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Outfit', system-ui, -apple-system, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+      transition: background 0.35s ease, color 0.35s ease;
+      line-height: 1.55;
+    }
+
+    .ambient-bg {
+      position: fixed; inset: 0; z-index: -2; pointer-events: none;
+      background:
+        radial-gradient(circle at 12% 18%, rgba(99, 102, 241, 0.16), transparent 40%),
+        radial-gradient(circle at 86% 22%, rgba(6, 182, 212, 0.14), transparent 38%),
+        radial-gradient(circle at 50% 85%, rgba(245, 158, 11, 0.08), transparent 42%);
+    }
+    .grid-overlay {
+      position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: 0.25;
+      background-image: linear-gradient(var(--border) 1px, transparent 1px),
+                        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 44px 44px;
+      mask-image: radial-gradient(ellipse at center, black 35%, transparent 85%);
+    }
+
+    /* STEP-BY-STEP OPENING SPLASH */
+    #intro-overlay {
+      position: fixed; inset: 0; z-index: 9999;
+      background: radial-gradient(circle at center, #111b36 0%, #050811 100%);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 24px; overflow: hidden;
+      transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    #intro-overlay.hide { opacity: 0; transform: scale(1.04); pointer-events: none; }
+
+    .intro-floater {
+      position: absolute; font-family: 'JetBrains Mono', monospace;
+      color: rgba(99, 102, 241, 0.22); font-weight: 700; user-select: none;
+      animation: floatSym 7s ease-in-out infinite;
+    }
+    @keyframes floatSym {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-22px) rotate(12deg); }
+    }
+
+    .intro-stage { text-align: center; max-width: 720px; position: relative; z-index: 2; }
+    .intro-logo-wrap {
+      width: 110px; height: 110px; margin: 0 auto 22px;
+      opacity: 0; transform: scale(0.6);
+      transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .intro-logo-wrap.active { opacity: 1; transform: scale(1); }
+    .svg-draw { stroke-dasharray: 420; stroke-dashoffset: 420; animation: drawStroke 1.5s ease forwards; }
+    @keyframes drawStroke { to { stroke-dashoffset: 0; } }
+
+    .intro-step { opacity: 0; transform: translateY(22px); transition: all 0.75s cubic-bezier(0.22, 1, 0.36, 1); }
+    .intro-step.active { opacity: 1; transform: translateY(0); }
+
+    .intro-kicker {
+      display: inline-block; padding: 6px 16px; border-radius: 999px;
+      background: rgba(99, 102, 241, 0.16); border: 1px solid rgba(99, 102, 241, 0.45);
+      color: #a5b4fc; font-size: 0.84rem; letter-spacing: 2.4px; font-weight: 700; margin-bottom: 14px;
+    }
+    .intro-title {
+      font-size: clamp(2rem, 5vw, 3.6rem); font-weight: 900; line-height: 1.1;
+      background: linear-gradient(135deg, #ffffff 10%, #a5b4fc 55%, #38bdf8 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 12px;
+    }
+    .intro-sub { color: #cbd5e1; font-size: 1.05rem; margin-bottom: 24px; }
+
+    .creator-spotlight {
+      display: inline-flex; flex-direction: column; align-items: center;
+      padding: 16px 32px; border-radius: 20px;
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(245, 158, 11, 0.35);
+      box-shadow: 0 0 40px rgba(245, 158, 11, 0.14); margin-bottom: 26px; position: relative;
+    }
+    .creator-label { font-size: 0.75rem; letter-spacing: 3px; text-transform: uppercase; color: #94a3b8; margin-bottom: 4px; }
+    .creator-name {
+      font-size: clamp(1.5rem, 3.5vw, 2.2rem); font-weight: 800;
+      background: linear-gradient(90deg, #fbbf24, #fde68a, #f59e0b);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1px;
+    }
+    .creator-underline {
+      height: 3px; width: 0%; border-radius: 3px; margin-top: 6px;
+      background: linear-gradient(90deg, transparent, #f59e0b, transparent); transition: width 0.9s ease;
+    }
+    .intro-step.active .creator-underline { width: 100%; }
+
+    .intro-progress-dots { display: flex; gap: 10px; justify-content: center; margin-bottom: 22px; }
+    .intro-dot { width: 34px; height: 5px; border-radius: 99px; background: rgba(255,255,255,0.16); transition: all 0.4s ease; }
+    .intro-dot.done { background: linear-gradient(90deg, #6366f1, #06b6d4); }
+
+    .btn-enter {
+      padding: 14px 34px; border-radius: 14px; border: none; cursor: pointer;
+      font-family: inherit; font-size: 1.05rem; font-weight: 700; color: white;
+      background: linear-gradient(135deg, #6366f1, #0ea5e9);
+      box-shadow: 0 10px 30px rgba(99, 102, 241, 0.45);
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+    .btn-enter:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 16px 38px rgba(6, 182, 212, 0.5); }
+    .skip-intro {
+      position: absolute; top: 24px; right: 24px;
+      background: rgba(255,255,255,0.08); color: #cbd5e1; border: 1px solid rgba(255,255,255,0.16);
+      padding: 8px 16px; border-radius: 999px; cursor: pointer; font-family: inherit; font-size: 0.85rem;
+    }
+    .skip-intro:hover { background: rgba(255,255,255,0.16); color: #fff; }
+
+    /* HEADER / NAVBAR */
+    header {
+      position: sticky; top: 0; z-index: 100;
+      backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+      background: rgba(7, 11, 20, 0.78); border-bottom: 1px solid var(--border);
+    }
+    [data-theme="light"] header { background: rgba(255, 255, 255, 0.85); }
+
+    .nav-wrap {
+      max-width: 1360px; margin: 0 auto; padding: 12px 22px;
+      display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+    .brand-icon {
+      width: 42px; height: 42px; border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      display: grid; place-items: center; font-weight: 900; font-size: 1.25rem; color: #fff;
+      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.35);
+    }
+    .brand h1 { font-size: 1.08rem; font-weight: 800; letter-spacing: -0.2px; }
+    .brand small { display: block; font-size: 0.74rem; color: var(--gold); font-weight: 600; }
+
+    .nav-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+    .nav-btn {
+      padding: 9px 16px; border-radius: 11px; border: 1px solid transparent;
+      background: transparent; color: var(--text-secondary);
+      font-family: inherit; font-size: 0.9rem; font-weight: 600; cursor: pointer;
+      transition: var(--transition); display: inline-flex; align-items: center; gap: 7px;
+    }
+    .nav-btn:hover { color: var(--text-primary); background: rgba(99, 102, 241, 0.1); }
+    .nav-btn.active {
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(6, 182, 212, 0.18));
+      border-color: rgba(99, 102, 241, 0.45); color: var(--text-primary);
+    }
+
+    .nav-actions { display: flex; align-items: center; gap: 10px; }
+    .pill-stat {
+      padding: 6px 12px; border-radius: 999px; font-size: 0.8rem; font-weight: 700;
+      background: rgba(16, 185, 129, 0.14); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+    .icon-btn {
+      width: 38px; height: 38px; border-radius: 10px; border: 1px solid var(--border);
+      background: var(--bg-card); color: var(--text-primary); cursor: pointer;
+      display: grid; place-items: center; font-size: 1.05rem; transition: var(--transition);
+    }
+    .icon-btn:hover { border-color: var(--accent); transform: translateY(-2px); }
+
+    /* MAIN LAYOUT */
+    main { max-width: 1360px; margin: 0 auto; padding: 26px 22px 70px; }
+    .view-section { display: none; animation: fadeUp 0.42s ease; }
+    .view-section.active { display: block; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card {
+      background: var(--bg-card); backdrop-filter: blur(14px);
+      border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 22px; transition: var(--transition);
+    }
+    .card:hover { border-color: rgba(99, 102, 241, 0.35); }
+
+    .hero-banner {
+      position: relative; overflow: hidden; border-radius: 22px; padding: 32px;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.22), rgba(6, 182, 212, 0.12), rgba(245, 158, 11, 0.08));
+      border: 1px solid rgba(99, 102, 241, 0.35);
+      margin-bottom: 26px; display: grid; grid-template-columns: 1.5fr 1fr; gap: 24px; align-items: center;
+    }
+    @media (max-width: 900px) { .hero-banner { grid-template-columns: 1fr; } }
+
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px; padding: 5px 14px; border-radius: 999px;
+      background: rgba(245, 158, 11, 0.16); color: var(--gold); border: 1px solid rgba(245, 158, 11, 0.35);
+      font-size: 0.8rem; font-weight: 700; margin-bottom: 12px;
+    }
+    .hero-banner h2 { font-size: clamp(1.7rem, 3.2vw, 2.5rem); font-weight: 900; line-height: 1.15; margin-bottom: 10px; }
+    .hero-banner p { color: var(--text-secondary); max-width: 620px; margin-bottom: 20px; }
+
+    .hero-cta { display: flex; gap: 12px; flex-wrap: wrap; }
+    .btn {
+      padding: 11px 20px; border-radius: 12px; border: 1px solid transparent;
+      font-family: inherit; font-size: 0.92rem; font-weight: 700; cursor: pointer;
+      transition: var(--transition); display: inline-flex; align-items: center; gap: 8px;
+    }
+    .btn-primary { background: linear-gradient(135deg, var(--accent), #4f46e5); color: #fff; box-shadow: 0 8px 22px rgba(99, 102, 241, 0.35); }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(99, 102, 241, 0.5); }
+    .btn-outline { background: var(--bg-elevated); color: var(--text-primary); border-color: var(--border); }
+    .btn-outline:hover { border-color: var(--accent-2); color: var(--accent-2); }
+    .btn-gold { background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; }
+    .btn-success { background: linear-gradient(135deg, #10b981, #059669); color: #fff; }
+    .btn-sm { padding: 7px 13px; font-size: 0.82rem; border-radius: 9px; }
+
+    .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .stat-tile { background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; padding: 16px; }
+    .stat-val { font-size: 1.65rem; font-weight: 900; color: var(--text-primary); font-family: 'JetBrains Mono', monospace; }
+    .stat-lbl { font-size: 0.78rem; color: var(--text-secondary); font-weight: 600; }
+
+    .units-strip { display: grid; grid-template-columns: repeat(auto-fit, minmax(165px, 1fr)); gap: 12px; margin-bottom: 26px; }
+    .unit-chip {
+      padding: 14px; border-radius: 14px; background: var(--bg-card); border: 1px solid var(--border);
+      cursor: pointer; transition: var(--transition);
+    }
+    .unit-chip:hover, .unit-chip.active { border-color: var(--accent); background: rgba(99, 102, 241, 0.14); transform: translateY(-2px); }
+    .unit-chip .u-marks { font-size: 0.76rem; font-weight: 800; color: var(--accent-2); }
+    .unit-chip .u-name { font-size: 0.92rem; font-weight: 700; margin-top: 2px; }
+
+    .filter-bar { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
+    .search-box {
+      padding: 10px 16px; border-radius: 12px; border: 1px solid var(--border);
+      background: var(--bg-card); color: var(--text-primary); font-family: inherit; min-width: 260px; outline: none;
+    }
+    .search-box:focus { border-color: var(--accent); }
+
+    .chapters-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 18px; }
+    .ch-card { position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; cursor: pointer; }
+    .ch-card:hover { transform: translateY(-5px); box-shadow: var(--glow); border-color: var(--accent); }
+    .ch-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 12px; }
+    .ch-num {
+      padding: 4px 11px; border-radius: 8px; font-size: 0.76rem; font-weight: 800;
+      background: rgba(99, 102, 241, 0.18); color: #a5b4fc; font-family: 'JetBrains Mono', monospace;
+    }
+    [data-theme="light"] .ch-num { color: #4f46e5; }
+    .ch-unit-tag { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; }
+    .ch-card h3 { font-size: 1.15rem; font-weight: 800; margin-bottom: 6px; }
+    .ch-topics { font-size: 0.83rem; color: var(--text-secondary); margin-bottom: 14px; }
+    .ch-meta { display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; padding-top: 12px; border-top: 1px solid var(--border); }
+    .progress-bar { height: 6px; border-radius: 99px; background: rgba(148,163,184,0.18); overflow: hidden; margin-bottom: 10px; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-2)); transition: width 0.5s ease; }
+
+    /* PRACTICE STUDIO */
+    .studio-layout { display: grid; grid-template-columns: 310px 1fr; gap: 20px; align-items: start; }
+    @media (max-width: 980px) { .studio-layout { grid-template-columns: 1fr; } }
+
+    .sidebar-panel { position: sticky; top: 84px; }
+    .q-palette {
+      display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-top: 12px; max-height: 280px; overflow-y: auto; padding-right: 4px;
+    }
+    .q-dot {
+      aspect-ratio: 1; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--bg-elevated); color: var(--text-secondary); font-size: 0.72rem; font-weight: 700;
+      cursor: pointer; display: grid; place-items: center; transition: 0.18s; font-family: 'JetBrains Mono', monospace;
+    }
+    .q-dot:hover { border-color: var(--accent); color: var(--text-primary); }
+    .q-dot.current { background: var(--accent); color: #fff; border-color: var(--accent); transform: scale(1.06); }
+    .q-dot.solved { background: rgba(16, 185, 129, 0.22); border-color: var(--success); color: var(--success); }
+    .q-dot.bookmarked { box-shadow: inset 0 0 0 2px var(--gold); }
+
+    select, input[type="number"] {
+      width: 100%; padding: 9px 12px; border-radius: 10px; border: 1px solid var(--border);
+      background: var(--bg-card-solid); color: var(--text-primary); font-family: inherit; font-size: 0.88rem; outline: none;
+    }
+    select:focus, input:focus { border-color: var(--accent); }
+
+    .question-box { min-height: 460px; }
+    .q-header {
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;
+      padding-bottom: 14px; border-bottom: 1px solid var(--border); margin-bottom: 18px;
+    }
+    .badge-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .tag { padding: 4px 10px; border-radius: 8px; font-size: 0.75rem; font-weight: 800; letter-spacing: 0.3px; }
+    .tag-type { background: rgba(99, 102, 241, 0.18); color: #a5b4fc; border: 1px solid rgba(99, 102, 241, 0.35); }
+    [data-theme="light"] .tag-type { color: #4338ca; }
+    .tag-marks { background: rgba(245, 158, 11, 0.16); color: var(--gold); border: 1px solid rgba(245, 158, 11, 0.35); }
+    .tag-diff-Easy { background: rgba(16, 185, 129, 0.16); color: var(--success); }
+    .tag-diff-Medium { background: rgba(6, 182, 212, 0.16); color: var(--accent-2); }
+    .tag-diff-Hard { background: rgba(239, 68, 68, 0.16); color: #f87171; }
+
+    .q-prompt { font-size: 1.12rem; font-weight: 500; margin-bottom: 18px; line-height: 1.7; }
+    .q-visual {
+      margin: 16px 0; padding: 14px; border-radius: 14px;
+      background: rgba(15, 23, 42, 0.45); border: 1px solid var(--border);
+      display: flex; justify-content: center; align-items: center; overflow-x: auto;
+    }
+    [data-theme="light"] .q-visual { background: #f8fafc; }
+
+    .frac { display: inline-flex; flex-direction: column; vertical-align: middle; text-align: center; font-size: 0.88em; margin: 0 3px; }
+    .frac > span:first-child { border-bottom: 1.5px solid currentColor; padding: 0 4px; line-height: 1.15; }
+    .frac > span:last-child { padding: 0 4px; line-height: 1.15; }
+
+    .stat-table { width: 100%; max-width: 620px; border-collapse: collapse; font-size: 0.9rem; margin: 6px auto; }
+    .stat-table th, .stat-table td { border: 1px solid var(--border); padding: 8px 12px; text-align: center; }
+    .stat-table th { background: rgba(99, 102, 241, 0.18); font-weight: 700; }
+
+    .options-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 16px 0; }
+    .opt-btn {
+      text-align: left; padding: 14px 16px; border-radius: 12px; border: 1.5px solid var(--border);
+      background: var(--bg-elevated); color: var(--text-primary); font-family: inherit; font-size: 0.98rem;
+      cursor: pointer; transition: var(--transition); display: flex; align-items: center; gap: 12px;
+    }
+    .opt-btn:hover:not(:disabled) { border-color: var(--accent); transform: translateX(4px); }
+    .opt-key {
+      width: 28px; height: 28px; border-radius: 8px; background: rgba(99, 102, 241, 0.18);
+      display: grid; place-items: center; font-weight: 800; font-size: 0.85rem; flex-shrink: 0;
+    }
+    .opt-btn.correct { border-color: var(--success); background: rgba(16, 185, 129, 0.18); }
+    .opt-btn.correct .opt-key { background: var(--success); color: #fff; }
+    .opt-btn.wrong { border-color: var(--danger); background: rgba(239, 68, 68, 0.16); }
+    .opt-btn.wrong .opt-key { background: var(--danger); color: #fff; }
+
+    .solution-box {
+      margin-top: 20px; border-radius: 14px; border: 1px solid rgba(16, 185, 129, 0.35);
+      background: rgba(16, 185, 129, 0.06); padding: 18px; display: none;
+    }
+    .solution-box.open { display: block; animation: fadeUp 0.3s ease; }
+    .sol-step {
+      padding: 10px 14px; border-left: 3px solid var(--accent-2); background: var(--bg-card);
+      border-radius: 0 10px 10px 0; margin-bottom: 10px; font-size: 0.95rem; animation: fadeUp 0.28s ease;
+    }
+    .sol-step strong { color: var(--accent-2); margin-right: 6px; }
+    .final-ans-box { padding: 12px 16px; border-radius: 10px; background: rgba(16, 185, 129, 0.16); border: 1px solid var(--success); font-weight: 700; margin-top: 8px; }
+
+    .quiz-setup-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; margin-bottom: 22px; }
+    .timer-pill {
+      padding: 8px 16px; border-radius: 999px; font-family: 'JetBrains Mono', monospace; font-weight: 800;
+      background: rgba(245, 158, 11, 0.16); color: var(--gold); border: 1px solid rgba(245, 158, 11, 0.4);
+    }
+
+    .modal-backdrop {
+      position: fixed; inset: 0; z-index: 500; background: rgba(3, 7, 18, 0.78); backdrop-filter: blur(8px);
+      display: none; align-items: center; justify-content: center; padding: 20px;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal-card {
+      width: 100%; max-width: 780px; max-height: 85vh; overflow-y: auto;
+      background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 20px; padding: 26px; animation: fadeUp 0.28s ease;
+    }
+    .formula-item { padding: 12px 14px; border-radius: 12px; background: var(--bg-elevated); border: 1px solid var(--border); margin-bottom: 10px; }
+
+    #confetti-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 9998; }
+
+    footer { text-align: center; padding: 26px 20px; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 0.88rem; margin-top: 40px; }
+    footer strong { color: var(--gold); }
+  </style>
+</head>
+<body>
+  <canvas id="confetti-canvas"></canvas>
+  <div class="ambient-bg"></div>
+  <div class="grid-overlay"></div>
+
+  <div id="intro-overlay">
+    <button class="skip-intro" onclick="finishIntro()">Skip Intro →</button>
+    <div class="intro-floater" style="top:12%;left:10%;font-size:2.4rem;">∑</div>
+    <div class="intro-floater" style="top:20%;right:14%;font-size:2.8rem;animation-delay:1s;">π</div>
+    <div class="intro-floater" style="bottom:18%;left:15%;font-size:2.5rem;animation-delay:2s;">Δ</div>
+    <div class="intro-floater" style="bottom:14%;right:12%;font-size:2.6rem;animation-delay:1.5s;">θ</div>
+    <div class="intro-floater" style="top:50%;left:6%;font-size:2rem;animation-delay:2.6s;">√x</div>
+    <div class="intro-floater" style="top:46%;right:7%;font-size:2.2rem;animation-delay:0.6s;">∞</div>
+
+    <div class="intro-stage">
+      <div id="i-logo" class="intro-logo-wrap">
+        <svg viewBox="0 0 120 120" width="110" height="110">
+          <circle cx="60" cy="60" r="52" fill="none" stroke="url(#gradIntro)" stroke-width="3.5" class="svg-draw"/>
+          <polygon points="60,20 96,86 24,86" fill="none" stroke="#38bdf8" stroke-width="3" class="svg-draw"/>
+          <path d="M44 72 L60 44 L76 72" fill="none" stroke="#fbbf24" stroke-width="3" class="svg-draw"/>
+          <circle cx="60" cy="60" r="5" fill="#fbbf24"/>
+          <defs>
+            <linearGradient id="gradIntro" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#6366f1"/>
+              <stop offset="100%" stop-color="#06b6d4"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+
+      <div id="i-step1" class="intro-step">
+        <div class="intro-kicker">CBSE CLASS X • STANDARD (041) & BASIC (241)</div>
+        <h1 class="intro-title">Mathematics Mastery Studio</h1>
+      </div>
+
+      <div id="i-step2" class="intro-step">
+        <p class="intro-sub">14 NCERT Chapters • 4,900+ Board-Style Questions (350/Chapter) • Step-by-Step Marking Scheme</p>
+      </div>
+
+      <div id="i-step3" class="intro-step">
+        <div class="creator-spotlight">
+          <span class="creator-label">Created &amp; Designed By</span>
+          <span class="creator-name">SUNNY RATHEE</span>
+          <div class="creator-underline"></div>
+        </div>
+      </div>
+
+      <div class="intro-progress-dots">
+        <div id="dot1" class="intro-dot"></div>
+        <div id="dot2" class="intro-dot"></div>
+        <div id="dot3" class="intro-dot"></div>
+        <div id="dot4" class="intro-dot"></div>
+      </div>
+
+      <div id="i-step4" class="intro-step">
+        <button class="btn-enter" onclick="finishIntro()">Enter Practice Studio →</button>
+      </div>
+    </div>
+  </div>
+
+  <header>
+    <div class="nav-wrap">
+      <div class="brand" onclick="switchView('dashboard')">
+        <div class="brand-icon">∑</div>
+        <div>
+          <h1>CBSE Class 10 Maths</h1>
+          <small>Studio by Sunny Rathee</small>
+        </div>
+      </div>
+
+      <nav class="nav-tabs">
+        <button class="nav-btn active" data-view="dashboard" onclick="switchView('dashboard')">🏠 Chapters &amp; Syllabus</button>
+        <button class="nav-btn" data-view="practice" onclick="switchView('practice')">📘 Practice Bank (4,900+)</button>
+        <button class="nav-btn" data-view="quiz" onclick="switchView('quiz')">⏱️ Quiz &amp; CBSE Mock Exam</button>
+        <button class="nav-btn" data-view="formulas" onclick="openFormulaModal(currentChapterId)">📐 Formula Vault</button>
+      </nav>
+
+      <div class="nav-actions">
+        <div class="pill-stat" id="global-mastery-pill">Solved: 0</div>
+        <button class="icon-btn" title="Replay Intro" onclick="replayIntro()">✨</button>
+        <button class="icon-btn" title="Toggle Theme" onclick="toggleTheme()" id="theme-btn">☀️</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section id="view-dashboard" class="view-section active">
+      <div class="hero-banner">
+        <div>
+          <div class="hero-badge">⚡ 2026–27 CBSE Rationalized Pattern • 350 Questions / Chapter</div>
+          <h2>Master Every CBSE Class 10 Maths Question Type</h2>
+          <p>
+            Practice <strong>MCQs, Assertion–Reason, Very Short (2M), Short (3M), Long (5M)</strong> and
+            <strong>Case-Based (4M)</strong> problems with dynamic SVG geometry figures and step-by-step board marking schemes.
+          </p>
+          <div class="hero-cta">
+            <button class="btn btn-primary" onclick="openChapterPractice(1)">Start Chapter 1: Real Numbers →</button>
+            <button class="btn btn-gold" onclick="switchView('quiz')">Take 80-Mark Board Mock</button>
+            <button class="btn btn-outline" onclick="openFormulaModal(1)">View All Formulas</button>
+          </div>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-tile">
+            <div class="stat-val">4,900</div>
+            <div class="stat-lbl">Board Questions (350 × 14)</div>
+          </div>
+          <div class="stat-tile">
+            <div class="stat-val">6 Types</div>
+            <div class="stat-lbl">MCQ, A-R, VSA, SA, LA, Case</div>
+          </div>
+          <div class="stat-tile">
+            <div class="stat-val" id="dash-solved-count">0</div>
+            <div class="stat-lbl">Questions Mastered</div>
+          </div>
+          <div class="stat-tile">
+            <div class="stat-val" id="dash-bookmark-count">0</div>
+            <div class="stat-lbl">Bookmarked for Revision</div>
+          </div>
+        </div>
+      </div>
+
+      <h3 style="margin-bottom:12px; font-size:1.1rem;">CBSE Unit-Wise Marks Weightage (80 Marks Theory + 20 Internal)</h3>
+      <div class="units-strip" id="units-strip"></div>
+
+      <div class="filter-bar">
+        <h2 style="font-size:1.35rem;">All 14 Class 10 Chapters</h2>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <input type="text" class="search-box" id="chapter-search" placeholder="Search chapter or topic (e.g., Trig, AP, HCF)..." oninput="renderChaptersGrid()">
+          <button class="btn btn-outline btn-sm" onclick="selectedUnit='ALL'; renderUnitsStrip(); renderChaptersGrid();">Show All Units</button>
+        </div>
+      </div>
+      <div class="chapters-grid" id="chapters-grid"></div>
+    </section>
+
+    <section id="view-practice" class="view-section">
+      <div class="studio-layout">
+        <aside class="card sidebar-panel">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <h3 style="font-size:1.05rem;">Practice Controls</h3>
+            <button class="btn btn-outline btn-sm" onclick="openFormulaModal(currentChapterId)">📐 Formulas</button>
+          </div>
+
+          <label style="font-size:0.78rem; color:var(--text-secondary); font-weight:700;">Select Chapter</label>
+          <select id="prac-chapter" style="margin:5px 0 12px;" onchange="onPracticeFilterChange(true)"></select>
+
+          <label style="font-size:0.78rem; color:var(--text-secondary); font-weight:700;">Question Type (CBSE Pattern)</label>
+          <select id="prac-type" style="margin:5px 0 12px;" onchange="onPracticeFilterChange(false)">
+            <option value="ALL">All Types (350 Questions)</option>
+            <option value="MCQ">Section A: MCQ (1 Mark)</option>
+            <option value="AR">Section A: Assertion–Reason (1 Mark)</option>
+            <option value="VSA">Section B: Very Short Answer (2 Marks)</option>
+            <option value="SA">Section C: Short Answer (3 Marks)</option>
+            <option value="LA">Section D: Long Answer (5 Marks)</option>
+            <option value="CASE">Section E: Case-Based (4 Marks)</option>
+          </select>
+
+          <label style="font-size:0.78rem; color:var(--text-secondary); font-weight:700;">Difficulty Level</label>
+          <select id="prac-diff" style="margin:5px 0 12px;" onchange="onPracticeFilterChange(false)">
+            <option value="ALL">All Levels (Basic + Standard + HOTS)</option>
+            <option value="Easy">Easy / Basic (241)</option>
+            <option value="Medium">Medium / Standard (041)</option>
+            <option value="Hard">Hard / HOTS</option>
+          </select>
+
+          <div style="display:flex; gap:8px; align-items:center; margin-bottom:10px;">
+            <input type="number" id="jump-q-input" min="1" max="350" placeholder="Jump Q# (1-350)">
+            <button class="btn btn-primary btn-sm" onclick="jumpToQuestion()">Go</button>
+          </div>
+
+          <div style="display:flex; justify-content:space-between; font-size:0.78rem; color:var(--text-secondary); margin-top:8px;">
+            <span id="filtered-count-lbl">Showing 350 Questions</span>
+            <label style="cursor:pointer;"><input type="checkbox" id="only-bookmarked" onchange="onPracticeFilterChange(false)"> Bookmarked</label>
+          </div>
+
+          <div class="q-palette" id="q-palette"></div>
+        </aside>
+
+        <div class="card question-box">
+          <div class="q-header">
+            <div class="badge-row" id="q-badges"></div>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+              <button class="btn btn-outline btn-sm" id="bookmark-btn" onclick="toggleBookmarkCurrent()">☆ Bookmark</button>
+              <button class="btn btn-outline btn-sm" id="master-btn" onclick="toggleSolvedCurrent()">✓ Mark Solved</button>
+            </div>
+          </div>
+
+          <div id="q-content"></div>
+
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-top:22px; padding-top:16px; border-top:1px solid var(--border);">
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+              <button class="btn btn-primary" onclick="revealNextStep()">Reveal Next Step</button>
+              <button class="btn btn-outline" onclick="revealAllSteps()">Show Full Solution</button>
+            </div>
+            <div style="display:flex; gap:10px;">
+              <button class="btn btn-outline" onclick="stepQuestion(-1)">← Previous</button>
+              <button class="btn btn-success" onclick="stepQuestion(1)">Next Question →</button>
+            </div>
+          </div>
+
+          <div class="solution-box" id="solution-box"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-quiz" class="view-section">
+      <div id="quiz-lobby">
+        <div class="hero-banner" style="margin-bottom:22px;">
+          <div>
+            <div class="hero-badge">🎯 Interactive CBSE Assessment Engine</div>
+            <h2>Timed Quizzes &amp; Full 80-Mark Board Simulator</h2>
+            <p>Test your speed and accuracy with auto-graded Objective Quizzes or simulate a complete CBSE Sections A–E Board Paper drawn dynamically from our 4,900-question bank.</p>
+          </div>
+          <div class="stat-tile">
+            <div class="stat-val" id="best-quiz-score">—</div>
+            <div class="stat-lbl">Best Quiz Accuracy</div>
+          </div>
+        </div>
+
+        <div class="quiz-setup-grid">
+          <div class="card">
+            <h3 style="margin-bottom:10px;">⚡ Quick Chapter Quiz</h3>
+            <p style="font-size:0.88rem; color:var(--text-secondary); margin-bottom:14px;">Auto-graded MCQs &amp; Assertion–Reason from any chapter.</p>
+            <label style="font-size:0.78rem; font-weight:700; color:var(--text-secondary);">Chapter</label>
+            <select id="quiz-chapter" style="margin:5px 0 12px;"></select>
+            <label style="font-size:0.78rem; font-weight:700; color:var(--text-secondary);">Number of Questions</label>
+            <select id="quiz-count" style="margin:5px 0 16px;">
+              <option value="10">10 Questions (12 Mins)</option>
+              <option value="20">20 Questions (25 Mins)</option>
+              <option value="30">30 Questions (35 Mins)</option>
+            </select>
+            <button class="btn btn-primary" style="width:100%; justify-content:center;" onclick="startChapterQuiz()">Start Chapter Quiz →</button>
+          </div>
+
+          <div class="card">
+            <h3 style="margin-bottom:10px;">📝 CBSE Full Board Mock (80 Marks)</h3>
+            <p style="font-size:0.88rem; color:var(--text-secondary); margin-bottom:14px;">38 Questions across Sections A–E matching official CBSE Blueprint.</p>
+            <ul style="font-size:0.84rem; color:var(--text-secondary); margin-left:18px; margin-bottom:16px;">
+              <li>Sec A: 18 MCQs + 2 Assertion–Reason (20 × 1M)</li>
+              <li>Sec B: 5 VSA (5 × 2M) | Sec C: 6 SA (6 × 3M)</li>
+              <li>Sec D: 4 LA (4 × 5M) | Sec E: 3 Case-Based (3 × 4M)</li>
+            </ul>
+            <button class="btn btn-gold" style="width:100%; justify-content:center;" onclick="startFullBoardMock()">Generate 80-Mark Sample Paper →</button>
+          </div>
+
+          <div class="card">
+            <h3 style="margin-bottom:10px;">🔥 Mixed All-Chapter Sprint</h3>
+            <p style="font-size:0.88rem; color:var(--text-secondary); margin-bottom:14px;">15 Rapid-Fire Competency &amp; MCQ questions across all 14 chapters.</p>
+            <div style="font-size:0.84rem; color:var(--text-secondary); margin-bottom:46px;">Great for daily 15-minute board exam warmups!</div>
+            <button class="btn btn-success" style="width:100%; justify-content:center;" onclick="startMixedSprint()">Launch 15-Q Mixed Sprint →</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="quiz-arena" style="display:none;">
+        <div class="card" style="margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+          <div>
+            <h3 id="quiz-title">Quiz in Progress</h3>
+            <small id="quiz-progress-txt" style="color:var(--text-secondary);">Question 1 of 10</small>
+          </div>
+          <div style="display:flex; gap:12px; align-items:center;">
+            <div class="timer-pill" id="quiz-timer">15:00</div>
+            <button class="btn btn-gold btn-sm" onclick="submitQuiz()">Submit &amp; Grade</button>
+            <button class="btn btn-outline btn-sm" onclick="exitQuiz()">Exit</button>
+          </div>
+        </div>
+
+        <div class="studio-layout">
+          <div class="card">
+            <h4 style="margin-bottom:8px;">Question Navigator</h4>
+            <div class="q-palette" id="quiz-palette"></div>
+          </div>
+          <div class="card">
+            <div id="quiz-q-container"></div>
+            <div style="display:flex; justify-content:space-between; margin-top:20px; padding-top:16px; border-top:1px solid var(--border);">
+              <button class="btn btn-outline" onclick="navQuiz(-1)">← Prev</button>
+              <button class="btn btn-primary" onclick="navQuiz(1)">Next →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="quiz-result" style="display:none;"></div>
+    </section>
+  </main>
+
+  <div class="modal-backdrop" id="formula-modal" onclick="if(event.target===this) closeFormulaModal()">
+    <div class="modal-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+        <h2 id="formula-modal-title">Chapter Formulas</h2>
+        <button class="icon-btn" onclick="closeFormulaModal()">✕</button>
+      </div>
+      <select id="formula-ch-select" style="margin-bottom:16px;" onchange="renderFormulaList(Number(this.value))"></select>
+      <div id="formula-list"></div>
+    </div>
+  </div>
+
+  <footer>
+    CBSE Class X Mathematics Practice Studio • 14 Chapters × 350 Questions = 4,900 Board-Style Problems<br>
+    Crafted with precision &amp; passion by <strong>Sunny Rathee</strong>
+  </footer>
+
+  <script>
+    const UNITS = [
+      { id: 'U1', name: 'Number Systems', marks: 6 },
+      { id: 'U2', name: 'Algebra', marks: 20 },
+      { id: 'U3', name: 'Coordinate Geometry', marks: 6 },
+      { id: 'U4', name: 'Geometry', marks: 15 },
+      { id: 'U5', name: 'Trigonometry', marks: 12 },
+      { id: 'U6', name: 'Mensuration', marks: 10 },
+      { id: 'U7', name: 'Statistics & Probability', marks: 11 }
+    ];
+
+    const CHAPTERS = [
+      { id: 1, unit: 'U1', name: 'Real Numbers', topics: 'Fundamental Theorem of Arithmetic, HCF & LCM, Irrationality Proofs',
+        formulas: [
+          ['Fundamental Theorem of Arithmetic', 'Every composite number can be factorised uniquely as a product of primes (apart from order).'],
+          ['HCF & LCM Relation (for 2 numbers)', 'HCF(a, b) × LCM(a, b) = a × b'],
+          ['Prime Power Rule', 'HCF = product of smallest powers of common primes; LCM = product of greatest powers of all primes involved.'],
+          ['Ending with Digit 0', 'For kⁿ to end with 0, prime factorisation of k must contain both 2 and 5.'],
+          ['Irrationality Theorem', 'If prime p divides a², then p divides a (where a is a positive integer).']
+        ]},
+      { id: 2, unit: 'U2', name: 'Polynomials', topics: 'Zeros, Graphical Meaning, Sum & Product of Zeros',
+        formulas: [
+          ['Quadratic Polynomial Standard Form', 'p(x) = ax² + bx + c, a ≠ 0'],
+          ['Sum & Product of Zeros', 'α + β = −b/a   and   αβ = c/a'],
+          ['Forming Quadratic Polynomial', 'k [ x² − (α + β)x + αβ ], where k ≠ 0'],
+          ['Useful Symmetric Identities', 'α² + β² = (α+β)² − 2αβ ;   1/α + 1/β = (α+β)/(αβ)']
+        ]},
+      { id: 3, unit: 'U2', name: 'Pair of Linear Equations in Two Variables', topics: 'Consistency Conditions, Substitution, Elimination, Word Problems',
+        formulas: [
+          ['Intersecting Lines (Unique Solution)', 'a₁/a₂ ≠ b₁/b₂  (Consistent)'],
+          ['Coincident Lines (Infinite Solutions)', 'a₁/a₂ = b₁/b₂ = c₁/c₂  (Consistent / Dependent)'],
+          ['Parallel Lines (No Solution)', 'a₁/a₂ = b₁/b₂ ≠ c₁/c₂  (Inconsistent)'],
+          ['Boat Speed Formula', 'Downstream = (u + v) km/h;  Upstream = (u − v) km/h']
+        ]},
+      { id: 4, unit: 'U2', name: 'Quadratic Equations', topics: 'Factorisation, Quadratic Formula, Discriminant & Nature of Roots',
+        formulas: [
+          ['Quadratic Formula (Sridharacharya)', 'x = [−b ± √(b² − 4ac)] / (2a)'],
+          ['Discriminant (D)', 'D = b² − 4ac'],
+          ['Nature of Roots', 'D > 0 ⇒ 2 distinct real roots;  D = 0 ⇒ 2 equal real roots;  D < 0 ⇒ No real roots']
+        ]},
+      { id: 5, unit: 'U2', name: 'Arithmetic Progressions', topics: 'nth Term, Sum of n Terms, nth Term from End, Applications',
+        formulas: [
+          ['nth Term of AP', 'aₙ = a + (n − 1)d'],
+          ['Sum of first n Terms', 'Sₙ = (n/2)[2a + (n − 1)d]  =  (n/2)(a + l)'],
+          ['Relation between aₙ and Sₙ', 'aₙ = Sₙ − Sₙ₋₁'],
+          ['3 Terms in AP', 'If a, b, c are in AP ⇒ 2b = a + c']
+        ]},
+      { id: 6, unit: 'U3', name: 'Coordinate Geometry', topics: 'Distance Formula, Section Formula, Midpoint, Equidistant Points',
+        formulas: [
+          ['Distance Formula', 'd = √[(x₂ − x₁)² + (y₂ − y₁)²] ;  Distance from origin = √(x² + y²)'],
+          ['Section Formula (Internal m:n)', 'P(x, y) = ( (mx₂ + nx₁)/(m+n) , (my₂ + ny₁)/(m+n) )'],
+          ['Midpoint Formula', 'M = ( (x₁ + x₂)/2 , (y₁ + y₂)/2 )'],
+          ['Parallelogram Property', 'Diagonals bisect each other ⇒ Midpoint of AC = Midpoint of BD']
+        ]},
+      { id: 7, unit: 'U4', name: 'Triangles', topics: 'BPT (Thales Theorem), Similarity Criteria (AAA, SAS, SSS)',
+        formulas: [
+          ['Basic Proportionality Theorem (BPT)', 'If DE ∥ BC in △ABC, then AD/DB = AE/EC (and AD/AB = AE/AC)'],
+          ['Similarity Criteria', 'AAA (or AA), SSS, and SAS similarity criteria'],
+          ['Perimeter Ratio of Similar Triangles', 'If △ABC ∼ △DEF, then Perimeter(ABC)/Perimeter(DEF) = AB/DE = BC/EF = AC/DF']
+        ]},
+      { id: 8, unit: 'U4', name: 'Circles', topics: 'Tangent ⊥ Radius, Equal Tangents from External Point, Incircle Properties',
+        formulas: [
+          ['Theorem 10.1', 'Tangent at any point of a circle is perpendicular to the radius through the point of contact (OP ⊥ PT).'],
+          ['Theorem 10.2', 'Lengths of two tangents drawn from an external point to a circle are equal (PA = PB).'],
+          ['Angle Relation', '∠AOB + ∠APB = 180° (Centre angle & angle between tangents are supplementary).'],
+          ['Circumscribing Quadrilateral', 'AB + CD = AD + BC']
+        ]},
+      { id: 9, unit: 'U5', name: 'Introduction to Trigonometry', topics: 'Trig Ratios, Standard Angles (0°–90°), Fundamental Identities',
+        formulas: [
+          ['Pythagorean Identities', 'sin²θ + cos²θ = 1 ;   1 + tan²θ = sec²θ ;   1 + cot²θ = csc²θ'],
+          ['Standard Values', 'sin 30° = 1/2, sin 45° = 1/√2, sin 60° = √3/2, tan 30° = 1/√3, tan 45° = 1, tan 60° = √3'],
+          ['Quotient & Reciprocal', 'tan θ = sin θ / cos θ ;  csc θ = 1/sin θ ;  sec θ = 1/cos θ ;  cot θ = 1/tan θ']
+        ]},
+      { id: 10, unit: 'U5', name: 'Some Applications of Trigonometry', topics: 'Heights & Distances, Angle of Elevation & Depression',
+        formulas: [
+          ['Elevation vs Depression', 'Angle of Elevation = Angle of Depression (alternate interior angles).'],
+          ['Key Ratios', 'tan θ = Height / Base ;   sin θ = Height / Hypotenuse ;   cos θ = Base / Hypotenuse'],
+          ['Standard Values', '√2 ≈ 1.414,  √3 ≈ 1.732']
+        ]},
+      { id: 11, unit: 'U6', name: 'Areas Related to Circles', topics: 'Arc Length, Sector Area, Segment Area, Real-Life Applications',
+        formulas: [
+          ['Length of Arc of Sector', 'l = (θ / 360°) × 2πr'],
+          ['Area of Sector', 'A = (θ / 360°) × πr²  =  (1/2)lr'],
+          ['Area of Minor Segment', 'Area(Sector) − Area(△OAB) = (θ/360°)πr² − (1/2)r² sin θ'],
+          ['Clock Minute Hand', 'Angle swept in 1 minute = 360°/60 = 6°']
+        ]},
+      { id: 12, unit: 'U6', name: 'Surface Areas and Volumes', topics: 'Combination of Solids (Cube, Cuboid, Cylinder, Cone, Sphere, Hemisphere)',
+        formulas: [
+          ['Cylinder', 'CSA = 2πrh ;  TSA = 2πr(r + h) ;  Vol = πr²h'],
+          ['Cone (l = √(r² + h²))', 'CSA = πrl ;  TSA = πr(l + r) ;  Vol = (1/3)πr²h'],
+          ['Sphere & Hemisphere', 'Sphere: SA = 4πr², Vol = (4/3)πr³ ;  Hemisphere: CSA = 2πr², TSA = 3πr², Vol = (2/3)πr³']
+        ]},
+      { id: 13, unit: 'U7', name: 'Statistics', topics: 'Mean, Median, Mode of Grouped Data, Empirical Relation',
+        formulas: [
+          ['Mean (Direct / Assumed)', 'x̄ = Σfᵢxᵢ / Σfᵢ  =  a + (Σfᵢdᵢ / Σfᵢ)'],
+          ['Mode of Grouped Data', 'Mode = l + [ (f₁ − f₀) / (2f₁ − f₀ − f₂) ] × h'],
+          ['Median of Grouped Data', 'Median = l + [ (N/2 − cf) / f ] × h'],
+          ['Empirical Relationship', '3 Median = Mode + 2 Mean   ⇒   Mode = 3 Median − 2 Mean']
+        ]},
+      { id: 14, unit: 'U7', name: 'Probability', topics: 'Dice, Coins, 52 Playing Cards, Balls, Leap Year, Complementary Events',
+        formulas: [
+          ['Classical Probability', 'P(E) = Number of favourable outcomes / Total equally likely outcomes'],
+          ['Bounds & Complementary', '0 ≤ P(E) ≤ 1  and  P(E) + P(not E) = 1'],
+          ['52-Card Deck', '26 Red (13 Hearts, 13 Diamonds), 26 Black (13 Spades, 13 Clubs); 12 Face Cards (4J, 4Q, 4K); 4 Aces']
+        ]}
+    ];
+
+    function mulberry32(seed) {
+      let a = seed >>> 0;
+      return function() {
+        a |= 0; a = (a + 0x6D2B79F5) | 0;
+        let t = Math.imul(a ^ (a >>> 15), 1 | a);
+        t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      };
+    }
+    const rInt = (rng, min, max) => Math.floor(rng() * (max - min + 1)) + min;
+    const rPick = (rng, arr) => arr[Math.floor(rng() * arr.length)];
+    const gcd = (a, b) => { a = Math.abs(a); b = Math.abs(b); while (b) { [a, b] = [b, a % b]; } return a || 1; };
+    const lcm = (a, b) => Math.abs(a * b) / gcd(a, b);
+    function simpFrac(n, d) {
+      if (d < 0) { n = -n; d = -d; }
+      const g = gcd(n, d);
+      return [n / g, d / g];
+    }
+    function fmtFracTxt(n, d) {
+      const [sn, sd] = simpFrac(n, d);
+      return sd === 1 ? `${sn}` : `${sn}/${sd}`;
+    }
+    function primeFactors(n) {
+      const f = {}; let x = n;
+      for (let p = 2; p * p <= x; p++) {
+        while (x % p === 0) { f[p] = (f[p] || 0) + 1; x /= p; }
+      }
+      if (x > 1) f[x] = (f[x] || 0) + 1;
+      return f;
+    }
+    function primeFactorHTML(n) {
+      const f = primeFactors(n);
+      return Object.entries(f).map(([p, e]) => e > 1 ? `${p}<sup>${e}</sup>` : `${p}`).join(' × ');
+    }
+    function fmtTerm(coeff, sym, isFirst = false) {
+      if (coeff === 0) return '';
+      const absC = Math.abs(coeff);
+      const sign = coeff < 0 ? (isFirst ? '−' : ' − ') : (isFirst ? '' : ' + ');
+      const cStr = (absC === 1 && sym) ? '' : `${absC}`;
+      return `${sign}${cStr}${sym}`;
+    }
+    function fmtQuad(a, b, c, v = 'x') {
+      let s = fmtTerm(a, `${v}²`, true);
+      s += fmtTerm(b, v, !s);
+      s += fmtTerm(c, '', !s);
+      return s || '0';
+    }
+    function makeOptions(rng, correct, distractors) {
+      const set = new Set([String(correct)]);
+      for (const d of distractors) {
+        if (set.size >= 4) break;
+        if (d !== undefined && d !== null && String(d) !== String(correct)) set.add(String(d));
+      }
+      let bump = 1;
+      while (set.size < 4) set.add(`${correct} (${bump++})`);
+      const arr = Array.from(set);
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(rng() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return { options: arr, answerIndex: arr.indexOf(String(correct)) };
+    }
+    const AR_OPTIONS = [
+      'Both (A) and (R) are true and (R) is the correct explanation of (A).',
+      'Both (A) and (R) are true but (R) is NOT the correct explanation of (A).',
+      '(A) is true but (R) is false.',
+      '(A) is false but (R) is true.'
+    ];
+    const TRIPLES = [[3,4,5],[5,12,13],[8,15,17],[7,24,25],[9,40,41],[20,21,29]];
+
+    function svgCoordPlot(points, lineEq = false) {
+      const toX = x => 160 + x * 18;
+      const toY = y => 130 - y * 18;
+      let grid = '';
+      for (let i = -7; i <= 7; i++) {
+        grid += `<line x1="${toX(i)}" y1="10" x2="${toX(i)}" y2="250" stroke="rgba(148,163,184,0.16)" stroke-width="1"/>`;
+        grid += `<line x1="20" y1="${toY(i)}" x2="300" y2="${toY(i)}" stroke="rgba(148,163,184,0.16)" stroke-width="1"/>`;
+      }
+      const [p1, p2] = points;
+      const x1 = Math.max(-7, Math.min(7, p1[0])), y1 = Math.max(-6, Math.min(6, p1[1]));
+      const x2 = Math.max(-7, Math.min(7, p2[0])), y2 = Math.max(-6, Math.min(6, p2[1]));
+      return `<svg viewBox="0 0 320 260" width="320" height="230">
+        ${grid}
+        <line x1="20" y1="130" x2="300" y2="130" stroke="#94a3b8" stroke-width="1.8"/>
+        <line x1="160" y1="10" x2="160" y2="250" stroke="#94a3b8" stroke-width="1.8"/>
+        <text x="292" y="124" fill="#94a3b8" font-size="11">X</text>
+        <text x="165" y="20" fill="#94a3b8" font-size="11">Y</text>
+        <line x1="${toX(x1)}" y1="${toY(y1)}" x2="${toX(x2)}" y2="${toY(y2)}" stroke="#38bdf8" stroke-width="2.5" stroke-dasharray="${lineEq?'0':'5,4'}"/>
+        <circle cx="${toX(x1)}" cy="${toY(y1)}" r="5" fill="#fbbf24"/>
+        <circle cx="${toX(x2)}" cy="${toY(y2)}" r="5" fill="#10b981"/>
+        <text x="${toX(x1)+7}" y="${toY(y1)-6}" fill="#fde68a" font-size="11" font-weight="bold">A(${p1[0]}, ${p1[1]})</text>
+        <text x="${toX(x2)+7}" y="${toY(y2)-6}" fill="#6ee7b7" font-size="11" font-weight="bold">B(${p2[0]}, ${p2[1]})</text>
+      </svg>`;
+    }
+
+    function svgRightTri(baseLbl, heightLbl, hypLbl, angleLbl = 'θ') {
+      return `<svg viewBox="0 0 280 190" width="270" height="180">
+        <polygon points="45,155 225,155 225,35" fill="rgba(99,102,241,0.14)" stroke="#38bdf8" stroke-width="2.5"/>
+        <rect x="210" y="140" width="15" height="15" fill="none" stroke="#fbbf24" stroke-width="1.8"/>
+        <path d="M78,155 A35,35 0 0,0 71,136" fill="none" stroke="#10b981" stroke-width="2"/>
+        <text x="86" y="146" fill="#6ee7b7" font-size="12" font-weight="bold">${angleLbl}</text>
+        <text x="128" y="175" fill="#e2e8f0" font-size="12" font-weight="bold">${baseLbl}</text>
+        <text x="232" y="100" fill="#e2e8f0" font-size="12" font-weight="bold">${heightLbl}</text>
+        <text x="108" y="85" fill="#fde68a" font-size="12" font-weight="bold">${hypLbl}</text>
+      </svg>`;
+    }
+
+    function svgBPTTri(ad, db, ae, ec) {
+      return `<svg viewBox="0 0 260 190" width="250" height="180">
+        <polygon points="130,22 35,165 225,165" fill="rgba(99,102,241,0.12)" stroke="#38bdf8" stroke-width="2.4"/>
+        <line x1="82" y1="94" x2="178" y2="94" stroke="#fbbf24" stroke-width="2.4"/>
+        <text x="125" y="16" fill="#fff" font-size="12" font-weight="bold">A</text>
+        <text x="20" y="172" fill="#fff" font-size="12" font-weight="bold">B</text>
+        <text x="230" y="172" fill="#fff" font-size="12" font-weight="bold">C</text>
+        <text x="66" y="96" fill="#fde68a" font-size="12" font-weight="bold">D</text>
+        <text x="184" y="96" fill="#fde68a" font-size="12" font-weight="bold">E</text>
+        <text x="85" y="60" fill="#a5b4fc" font-size="11">${ad}</text>
+        <text x="40" y="135" fill="#a5b4fc" font-size="11">${db}</text>
+        <text x="162" y="60" fill="#6ee7b7" font-size="11">${ae}</text>
+        <text x="202" y="135" fill="#6ee7b7" font-size="11">${ec}</text>
+      </svg>`;
+    }
+
+    function svgCircleTangent(rLbl, ptLbl, opLbl, doubleTangent = false, angleO = '', angleP = '') {
+      if (doubleTangent) {
+        return `<svg viewBox="0 0 280 180" width="270" height="175">
+          <circle cx="95" cy="90" r="54" fill="rgba(99,102,241,0.12)" stroke="#38bdf8" stroke-width="2.4"/>
+          <line x1="95" y1="90" x2="122" y2="43" stroke="#94a3b8" stroke-width="1.8"/>
+          <line x1="95" y1="90" x2="122" y2="137" stroke="#94a3b8" stroke-width="1.8"/>
+          <line x1="122" y1="43" x2="235" y2="90" stroke="#fbbf24" stroke-width="2.4"/>
+          <line x1="122" y1="137" x2="235" y2="90" stroke="#fbbf24" stroke-width="2.4"/>
+          <circle cx="95" cy="90" r="3.5" fill="#fff"/>
+          <text x="80" y="94" fill="#fff" font-size="12" font-weight="bold">O</text>
+          <text x="120" y="36" fill="#fde68a" font-size="12">A</text>
+          <text x="120" y="152" fill="#fde68a" font-size="12">B</text>
+          <text x="242" y="94" fill="#fde68a" font-size="12" font-weight="bold">P</text>
+          ${angleO ? `<text x="106" y="94" fill="#6ee7b7" font-size="11">${angleO}</text>`:''}
+          ${angleP ? `<text x="195" y="94" fill="#a5b4fc" font-size="11">${angleP}</text>`:''}
+        </svg>`;
+      }
+      return `<svg viewBox="0 0 280 170" width="270" height="165">
+        <circle cx="85" cy="85" r="52" fill="rgba(99,102,241,0.12)" stroke="#38bdf8" stroke-width="2.4"/>
+        <line x1="85" y1="85" x2="85" y2="137" stroke="#6ee7b7" stroke-width="2.2"/>
+        <line x1="85" y1="137" x2="240" y2="137" stroke="#fbbf24" stroke-width="2.4"/>
+        <line x1="85" y1="85" x2="220" y2="137" stroke="#a5b4fc" stroke-width="2" stroke-dasharray="4,3"/>
+        <rect x="85" y="125" width="12" height="12" fill="none" stroke="#fbbf24" stroke-width="1.5"/>
+        <circle cx="85" cy="85" r="3.5" fill="#fff"/>
+        <text x="72" y="82" fill="#fff" font-size="12">O</text>
+        <text x="80" y="154" fill="#fde68a" font-size="12">T</text>
+        <text x="224" y="154" fill="#fde68a" font-size="12">P</text>
+        <text x="48" y="114" fill="#6ee7b7" font-size="11">${rLbl}</text>
+        <text x="145" y="154" fill="#fde68a" font-size="11">${ptLbl}</text>
+        <text x="150" y="104" fill="#a5b4fc" font-size="11">${opLbl}</text>
+      </svg>`;
+    }
+
+    function svgSector(rLbl, angLbl) {
+      return `<svg viewBox="0 0 220 170" width="210" height="165">
+        <circle cx="110" cy="90" r="62" fill="none" stroke="rgba(148,163,184,0.28)" stroke-width="1.5" stroke-dasharray="4,4"/>
+        <path d="M110,90 L172,90 A62,62 0 0,0 141,36 Z" fill="rgba(6,182,212,0.28)" stroke="#38bdf8" stroke-width="2.4"/>
+        <text x="100" y="106" fill="#fff" font-size="12">O</text>
+        <text x="176" y="94" fill="#fde68a" font-size="12">A</text>
+        <text x="142" y="30" fill="#fde68a" font-size="12">B</text>
+        <text x="132" y="82" fill="#6ee7b7" font-size="11">${angLbl}</text>
+        <text x="136" y="105" fill="#a5b4fc" font-size="11">${rLbl}</text>
+      </svg>`;
+    }
+
+    function svgSolidCombo(type, rLbl, hLbl) {
+      if (type === 'cone-hemi') {
+        return `<svg viewBox="0 0 200 185" width="190" height="175">
+          <path d="M55,110 A45,45 0 0,0 145,110" fill="rgba(99,102,241,0.2)" stroke="#38bdf8" stroke-width="2.4"/>
+          <polygon points="55,110 100,22 145,110" fill="rgba(6,182,212,0.18)" stroke="#fbbf24" stroke-width="2.4"/>
+          <ellipse cx="100" cy="110" rx="45" ry="11" fill="none" stroke="#94a3b8" stroke-width="1.4" stroke-dasharray="3,3"/>
+          <line x1="100" y1="22" x2="100" y2="110" stroke="#6ee7b7" stroke-width="1.6" stroke-dasharray="4,3"/>
+          <text x="106" y="75" fill="#6ee7b7" font-size="11">${hLbl}</text>
+          <text x="64" y="128" fill="#fde68a" font-size="11">${rLbl}</text>
+        </svg>`;
+      }
+      return `<svg viewBox="0 0 220 185" width="210" height="175">
+        <rect x="65" y="45" width="90" height="95" fill="rgba(99,102,241,0.18)" stroke="#38bdf8" stroke-width="2.3"/>
+        <ellipse cx="110" cy="45" rx="45" ry="12" fill="rgba(6,182,212,0.25)" stroke="#38bdf8" stroke-width="2.2"/>
+        <ellipse cx="110" cy="140" rx="45" ry="12" fill="rgba(6,182,212,0.18)" stroke="#38bdf8" stroke-width="2.2"/>
+        <text x="162" y="96" fill="#6ee7b7" font-size="11">${hLbl}</text>
+        <text x="95" y="30" fill="#fde68a" font-size="11">${rLbl}</text>
+      </svg>`;
+    }
+
+    function svgParabola(zerosCount) {
+      let path = '';
+      if (zerosCount === 2) path = 'M30,130 Q120,-10 210,130';
+      else if (zerosCount === 1) path = 'M30,20 Q120,170 210,20';
+      else if (zerosCount === 3) path = 'M25,130 C70,10 110,160 155,40 S195,120 220,25';
+      else path = 'M40,20 Q120,75 200,20';
+      return `<svg viewBox="0 0 240 150" width="235" height="145">
+        <line x1="15" y1="95" x2="225" y2="95" stroke="#94a3b8" stroke-width="1.8"/>
+        <line x1="120" y1="10" x2="120" y2="140" stroke="#94a3b8" stroke-width="1.8"/>
+        <path d="${path}" fill="none" stroke="#38bdf8" stroke-width="2.8"/>
+        <text x="215" y="88" fill="#94a3b8" font-size="11">X</text>
+        <text x="125" y="20" fill="#94a3b8" font-size="11">Y</text>
+      </svg>`;
+    }
+
+    function getQuestionMeta(idx) {
+      let type = 'MCQ', marks = 1;
+      if (idx < 90) { type = 'MCQ'; marks = 1; }
+      else if (idx < 130) { type = 'AR'; marks = 1; }
+      else if (idx < 200) { type = 'VSA'; marks = 2; }
+      else if (idx < 260) { type = 'SA'; marks = 3; }
+      else if (idx < 310) { type = 'LA'; marks = 5; }
+      else { type = 'CASE'; marks = 4; }
+      const diff = (idx % 3 === 0) ? 'Easy' : (idx % 3 === 1 ? 'Medium' : 'Hard');
+      return { type, marks, diff };
+    }
+
+    function generateQuestion(chId, qNum) {
+      const idx = qNum - 1;
+      const meta = getQuestionMeta(idx);
+      const rng = mulberry32(chId * 10000 + qNum * 7919);
+      let q = buildChapterQuestion(chId, idx, meta, rng);
+      return { id: `${chId}-${qNum}`, chId, qNum, type: meta.type, marks: meta.marks, diff: meta.diff, ...q };
+    }
+
+    function buildChapterQuestion(chId, idx, meta, rng) {
+      const { type } = meta;
+
+      if (chId === 1) {
+        if (type === 'MCQ') {
+          const variant = idx % 5;
+          if (variant === 0) {
+            const p = rPick(rng, [2, 3, 5]), q = rPick(rng, [3, 5, 7, 11]);
+            const m1 = rInt(rng, 2, 5), n1 = rInt(rng, 1, 4);
+            const m2 = rInt(rng, 1, 4), n2 = rInt(rng, 2, 5);
+            const a = p === q ? 2 : p, b = p === q ? 3 : q;
+            const hcfStr = `${a}${Math.min(m1,m2)>1?`<sup>${Math.min(m1,m2)}</sup>`:''} × ${b}${Math.min(n1,n2)>1?`<sup>${Math.min(n1,n2)}</sup>`:''}`;
+            const lcmStr = `${a}<sup>${Math.max(m1,m2)}</sup> × ${b}<sup>${Math.max(n1,n2)}</sup>`;
+            const askHCF = idx % 2 === 0;
+            const ans = askHCF ? hcfStr : lcmStr;
+            const opt = makeOptions(rng, ans, [askHCF ? lcmStr : hcfStr, `${a}<sup>${m1+m2}</sup> × ${b}<sup>${n1+n2}</sup>`, `${a} × ${b}`, `${a}<sup>${Math.max(m1,m2)}</sup> × ${b}<sup>${Math.min(n1,n2)}</sup>`]);
+            return {
+              prompt: `If two positive integers <i>p</i> and <i>q</i> are written as <i>p</i> = ${a}<sup>${m1}</sup> × ${b}<sup>${n1}</sup> and <i>q</i> = ${a}<sup>${m2}</sup> × ${b}<sup>${n2}</sup>, then ${askHCF ? 'HCF(<i>p</i>, <i>q</i>)' : 'LCM(<i>p</i>, <i>q</i>)'} is:`,
+              ...opt,
+              steps: [`Prime factorisations: <i>p</i> = ${a}<sup>${m1}</sup> × ${b}<sup>${n1}</sup> and <i>q</i> = ${a}<sup>${m2}</sup> × ${b}<sup>${n2}</sup>.`, askHCF ? `HCF takes the <b>smallest</b> power of each common prime factor.` : `LCM takes the <b>greatest</b> power of each prime factor involved.`, `Therefore, ${askHCF ? 'HCF' : 'LCM'} = ${ans}.`],
+              answerText: ans
+            };
+          }
+          if (variant === 1) {
+            const k = rInt(rng, 2, 12), x = rInt(rng, 3, 9), y = rInt(rng, 4, 11);
+            const g = gcd(x, y); const ax = (x / g) * k, by = (y / g) * k;
+            const h = gcd(ax, by), l = lcm(ax, by);
+            const opt = makeOptions(rng, `${by}`, [`${by + h}`, `${Math.round(l / 2)}`, `${ax + h}`]);
+            return {
+              prompt: `The HCF of two numbers is ${h} and their LCM is ${l}. If one of the numbers is ${ax}, then the other number is:`,
+              ...opt,
+              steps: [`Using the identity: HCF(a, b) × LCM(a, b) = a × b`, `${h} × ${l} = ${ax} × b`, `b = (${h} × ${l}) / ${ax} = ${by}.`],
+              answerText: `${by}`
+            };
+          }
+          if (variant === 2) {
+            const n = rPick(rng, [140, 156, 180, 196, 210, 240, 252, 324, 360, 420, 504, 720, 840]);
+            const pf = primeFactors(n);
+            const expSum = Object.values(pf).reduce((s, v) => s + v, 0);
+            const opt = makeOptions(rng, `${expSum}`, [`${expSum + 1}`, `${expSum - 1}`, `${expSum + 2}`]);
+            return {
+              prompt: `The sum of the exponents of the prime factors in the prime factorisation of ${n} is:`,
+              ...opt,
+              steps: [`Prime factorisation of ${n} = ${primeFactorHTML(n)}.`, `Exponents are: ${Object.values(pf).join(', ')}.`, `Sum of exponents = ${Object.values(pf).join(' + ')} = ${expSum}.`],
+              answerText: `${expSum}`
+            };
+          }
+          if (variant === 3) {
+            const a = rInt(rng, 2, 7) * 6, b = rInt(rng, 3, 9) * 6;
+            const h = gcd(a, b), l = lcm(a, b), ratio = l / h;
+            const opt = makeOptions(rng, `${ratio} : 1`, [`1 : ${ratio}`, `${h} : ${l}`, `${ratio + 1} : 1`]);
+            return {
+              prompt: `The ratio of LCM to HCF of ${a} and ${b} is:`,
+              ...opt,
+              steps: [`${a} = ${primeFactorHTML(a)},  ${b} = ${primeFactorHTML(b)}.`, `HCF = ${h},  LCM = ${l}.`, `Ratio LCM : HCF = ${l} : ${h} = ${ratio} : 1.`],
+              answerText: `${ratio} : 1`
+            };
+          }
+          const base = rPick(rng, [4, 6, 8, 9, 12, 14, 15, 18, 21]);
+          const ans = 'No natural number n';
+          const opt = makeOptions(rng, ans, ['n = 5', 'n = 2', 'n = 10']);
+          return {
+            prompt: `For what value of natural number <i>n</i> does ${base}<sup>n</sup> end with the digit 0?`,
+            ...opt,
+            steps: [`A number ends with digit 0 only if its prime factorisation contains both 2 and 5.`, `Prime factorisation of ${base}<sup>n</sup> is (${primeFactorHTML(base)})<sup>n</sup>.`, `Since both 2 and 5 are not present simultaneously, ${base}<sup>n</sup> can never end with 0.`],
+            answerText: ans
+          };
+        }
+        if (type === 'AR') {
+          const bank = [
+            ['HCF(12, 18) × LCM(12, 18) = 216.', 'For any two positive integers a and b, HCF(a, b) × LCM(a, b) = a × b.', 0],
+            ['6ⁿ cannot end with digit 0 for any natural number n.', 'A number ends with 0 if and only if its prime factorisation contains both 2 and 5.', 0],
+            ['The number 5√3 is an irrational number.', 'Product of a non-zero rational number and an irrational number is always irrational.', 0],
+            ['If HCF(a, b) = 18 and LCM(a, b) = 100, such a pair of integers exists.', 'HCF of two numbers always divides their LCM completely.', 3],
+            ['√2 + √3 is a rational number.', 'Sum of two irrational numbers can sometimes be rational, e.g., (2 + √3) + (2 − √3) = 4.', 3],
+            ['Every composite number can be expressed uniquely as a product of primes.', 'This statement is known as the Fundamental Theorem of Arithmetic.', 0]
+          ];
+          const [A, R, ansIdx] = bank[idx % bank.length];
+          return {
+            prompt: `<b>Assertion (A):</b> ${A}<br><b>Reason (R):</b> ${R}`,
+            options: AR_OPTIONS, answerIndex: ansIdx,
+            steps: [`Evaluate Assertion (A) and Reason (R) carefully using Fundamental Theorem of Arithmetic & irrationality rules.`, `Correct Option: (${String.fromCharCode(65 + ansIdx)}) ${AR_OPTIONS[ansIdx]}`],
+            answerText: AR_OPTIONS[ansIdx]
+          };
+        }
+        if (type === 'VSA') {
+          if (idx % 3 === 0) {
+            const c = rInt(rng, 2, 6), a = rInt(rng, 4, 15) * c, b = rInt(rng, 5, 18) * c;
+            const h = gcd(a, b), l = lcm(a, b);
+            return {
+              prompt: `Find the HCF and LCM of ${a} and ${b} by prime factorisation method and verify that HCF × LCM = Product of the two numbers.`,
+              steps: [`Prime factorisation: ${a} = ${primeFactorHTML(a)},  ${b} = ${primeFactorHTML(b)}.`, `HCF(${a}, ${b}) = ${h};   LCM(${a}, ${b}) = ${l}.`, `LHS: HCF × LCM = ${h} × ${l} = ${h * l}.`, `RHS: ${a} × ${b} = ${a * b}. Since LHS = RHS, verified.`],
+              answerText: `HCF = ${h}, LCM = ${l}`
+            };
+          }
+          if (idx % 3 === 1) {
+            const p = rPick(rng, [3, 5, 7, 11, 13]), q = rPick(rng, [2, 3, 5, 7]);
+            const a = rInt(rng, 2, 5), b = rInt(rng, 2, 6);
+            return {
+              prompt: `Explain why (${a} × ${p} × ${q} + ${p}) is a composite number.`,
+              steps: [`Factor out the common prime ${p}:  (${a} × ${p} × ${q} + ${p}) = ${p}(${a} × ${q} + 1).`, `= ${p} × ${a * q + 1}.`, `Since the expression has more than two factors (1, ${p}, ${a * q + 1}, and itself), it is a composite number.`],
+              answerText: `Composite because ${p} is a factor > 1`
+            };
+          }
+          const k = rPick(rng, [4, 6, 8, 12, 15]);
+          return {
+            prompt: `Check whether ${k}<sup>n</sup> can end with the digit 0 for any natural number <i>n</i>.`,
+            steps: [`If ${k}<sup>n</sup> ends with digit 0, it must be divisible by 10 = 2 × 5.`, `Prime factorisation of ${k}<sup>n</sup> = (${primeFactorHTML(k)})<sup>n</sup>.`, `By Fundamental Theorem of Arithmetic, ${k}<sup>n</sup> does not contain both 2 and 5 as prime factors. Hence, it cannot end with digit 0.`],
+            answerText: `No, ${k}ⁿ cannot end with 0.`
+          };
+        }
+        if (type === 'SA') {
+          if (idx % 2 === 0) {
+            const p = rPick(rng, [2, 3, 5, 7]), a = rInt(rng, 2, 7), b = rInt(rng, 2, 5);
+            return {
+              prompt: `Given that √${p} is irrational, prove that (${a} + ${b}√${p}) is an irrational number.`,
+              steps: [`Let us assume, to the contrary, that ${a} + ${b}√${p} is rational.`, `Then ${a} + ${b}√${p} = r/s, where r, s are integers (s ≠ 0).`, `Rearranging: √${p} = (r − ${a}s) / (${b}s).`, `Since r, s, ${a}, ${b} are integers, (r − ${a}s)/(${b}s) is rational ⇒ √${p} is rational, which contradicts the given fact that √${p} is irrational. Hence ${a} + ${b}√${p} is irrational.`],
+              answerText: `Proved by contradiction.`
+            };
+          }
+          const t1 = rPick(rng, [12, 15, 18, 20, 24]), t2 = rPick(rng, [16, 25, 30, 36]), t3 = rPick(rng, [10, 20, 40, 45]);
+          const ans = lcm(t1, lcm(t2, t3));
+          return {
+            prompt: `Three alarm bells ring at intervals of ${t1}, ${t2}, and ${t3} minutes respectively. If they all ring together at 8:00 AM, after how many minutes will they ring together again?`,
+            steps: [`They will ring together again after LCM(${t1}, ${t2}, ${t3}) minutes.`, `${t1} = ${primeFactorHTML(t1)};  ${t2} = ${primeFactorHTML(t2)};  ${t3} = ${primeFactorHTML(t3)}.`, `LCM = ${ans} minutes.`],
+            answerText: `${ans} minutes`
+          };
+        }
+        if (type === 'LA') {
+          if (idx % 2 === 0) {
+            const p = rPick(rng, [2, 3, 5, 7, 11]);
+            return {
+              prompt: `Prove that √${p} is an irrational number. Hence show that 3 − 2√${p} is also irrational.`,
+              steps: [`Assume √${p} is rational: √${p} = a/b (a, b coprime integers, b ≠ 0).`, `Squaring both sides: ${p}b² = a² ⇒ ${p} divides a² ⇒ ${p} divides a.`, `Let a = ${p}c. Then ${p}b² = ${p*p}c² ⇒ b² = ${p}c² ⇒ ${p} divides b.`, `Thus ${p} is a common factor of a and b, contradicting that a, b are coprime. Hence √${p} is irrational.`, `Now, if 3 − 2√${p} = r (rational), then √${p} = (3 − r)/2 (rational), a contradiction. Therefore, 3 − 2√${p} is irrational.`],
+              answerText: `Proved √${p} and 3 − 2√${p} are irrational.`
+            };
+          }
+          const a = rInt(rng, 4, 9) * 12, b = rInt(rng, 5, 11) * 12, c = rInt(rng, 6, 12) * 12;
+          const h = gcd(a, gcd(b, c)), stacks = (a + b + c) / h;
+          return {
+            prompt: `A school library has ${a} Maths books, ${b} Science books, and ${c} English books. They must be stacked in bundles of equal height, each containing books of the same subject only. Find the maximum number of books per stack and the total number of stacks formed.`,
+            steps: [`Maximum books in each stack = HCF(${a}, ${b}, ${c}).`, `${a} = ${primeFactorHTML(a)}, ${b} = ${primeFactorHTML(b)}, ${c} = ${primeFactorHTML(c)}.`, `HCF = ${h} books per stack.`, `Total stacks = (${a}/${h}) + (${b}/${h}) + (${c}/${h}) = ${a/h} + ${b/h} + ${c/h} = ${stacks} stacks.`],
+            answerText: `${h} books/stack, ${stacks} total stacks`
+          };
+        }
+        const g = rInt(rng, 4, 8), m1 = rInt(rng, 4, 9) * g, m2 = rInt(rng, 5, 11) * g;
+        const h = gcd(m1, m2), l = lcm(m1, m2);
+        return {
+          prompt: `<b>Case Study (Morning Walk & Parade):</b><br>Two friends Aarav and Kabir walk around a circular track. Aarav completes one round in ${m1} minutes while Kabir takes ${m2} minutes. Both start from the same point at 6:00 AM.<br>(i) After how many minutes will they meet again at the starting point?<br>(ii) Find HCF(${m1}, ${m2}) and express ${l} as a product of primes.`,
+          steps: [`(i) Meeting time at starting point = LCM(${m1}, ${m2}) = ${l} minutes.`, `(ii) ${m1} = ${primeFactorHTML(m1)},  ${m2} = ${primeFactorHTML(m2)}.`, `HCF(${m1}, ${m2}) = ${h}.`, `Prime factorisation of ${l} = ${primeFactorHTML(l)}.`],
+          answerText: `(i) ${l} mins, (ii) HCF = ${h}`
+        };
+      }
+
+      if (chId === 2) {
+        if (type === 'MCQ') {
+          if (idx % 4 === 0) {
+            const z = rPick(rng, [0, 1, 2, 3]);
+            const opt = makeOptions(rng, `${z}`, ['0', '1', '2', '3', '4']);
+            return {
+              prompt: `The graph of a polynomial <i>y = p(x)</i> is shown below. The number of zeros of <i>p(x)</i> is:`,
+              visual: svgParabola(z), ...opt,
+              steps: [`The number of real zeros of y = p(x) equals the number of times the graph intersects or touches the x-axis.`, `Counting intersections with the x-axis gives ${z}.`],
+              answerText: `${z}`
+            };
+          }
+          if (idx % 4 === 1) {
+            const r1 = rInt(rng, -6, 6), r2 = rInt(rng, -6, 7);
+            const b = -(r1 + r2), c = r1 * r2;
+            const askSum = idx % 2 === 0;
+            const ans = askSum ? (r1 + r2) : (r1 * r2);
+            const opt = makeOptions(rng, `${ans}`, [`${-ans}`, `${ans + 2}`, `${r1 - r2}`]);
+            return {
+              prompt: `If α and β are the zeros of the quadratic polynomial <i>p(x) = ${fmtQuad(1, b, c)}</i>, then the value of ${askSum ? 'α + β' : 'αβ'} is:`,
+              ...opt,
+              steps: [`Comparing with ax² + bx + c: a = 1, b = ${b}, c = ${c}.`, askSum ? `Sum of zeros α + β = −b/a = −(${b})/1 = ${ans}.` : `Product of zeros αβ = c/a = ${c}/1 = ${ans}.`],
+              answerText: `${ans}`
+            };
+          }
+          if (idx % 4 === 2) {
+            const a = rInt(rng, 2, 6), c = rInt(rng, 1, 5) * a;
+            const ans = a;
+            const opt = makeOptions(rng, `${ans}`, [`${-ans}`, `${c}`, `${a + 1}`]);
+            return {
+              prompt: `If one zero of the quadratic polynomial <i>${a}x² + 7x + k</i> is the reciprocal of the other, then <i>k</i> equals:`,
+              ...opt,
+              steps: [`Let the zeros be α and 1/α.`, `Product of zeros = α · (1/α) = 1.`, `Using c/a = 1 ⇒ k/${a} = 1 ⇒ k = ${ans}.`],
+              answerText: `${ans}`
+            };
+          }
+          const s = rInt(rng, -5, 6), p = rInt(rng, -8, 8);
+          const ans = fmtQuad(1, -s, p);
+          const opt = makeOptions(rng, ans, [fmtQuad(1, s, p), fmtQuad(1, -s, -p), fmtQuad(1, p, -s)]);
+          return {
+            prompt: `A quadratic polynomial whose sum and product of zeros are ${s} and ${p} respectively is:`,
+            ...opt,
+            steps: [`Formula: p(x) = x² − (Sum)x + (Product).`, `Substituting Sum = ${s}, Product = ${p}: p(x) = ${ans}.`],
+            answerText: ans
+          };
+        }
+        if (type === 'AR') {
+          const bank = [
+           ['A quadratic polynomial can have at most two real zeros.', 'A polynomial of degree n has at most n zeros.', 0],
+           ['If the graph of y = p(x) does not intersect the x-axis, it has no real zeros.', 'The zeros of p(x) are the x-coordinates of points where its graph meets the x-axis.', 0],
+           ['If one zero of 3x² − 8x + (2k+1) is seven times the other, then k = 2/3.', 'For ax² + bx + c, sum of zeros = −b/a and product = c/a.', 0],
+           ['x² + 4x + 5 has two distinct real zeros.', 'Sum of zeros of x² + 4x + 5 is −4.', 3]
+          ];
+          const [A, R, ansIdx] = bank[idx % bank.length];
+          return {
+            prompt: `<b>Assertion (A):</b> ${A}<br><b>Reason (R):</b> ${R}`,
+            options: AR_OPTIONS, answerIndex: ansIdx,
+            steps: [`Apply polynomial zero & discriminant properties.`, `Correct Option: (${String.fromCharCode(65 + ansIdx)})`],
+            answerText: AR_OPTIONS[ansIdx]
+          };
+        }
+        if (type === 'VSA') {
+          const r1 = rInt(rng, -5, 5), r2 = rInt(rng, 1, 7);
+          const b = -(r1 + r2), c = r1 * r2;
+          return {
+            prompt: `Find the zeros of the quadratic polynomial <i>${fmtQuad(1, b, c)}</i> and verify the relationship between the zeros and the coefficients.`,
+            steps: [`Factorise: ${fmtQuad(1, b, c)} = (x ${r1>=0?'− '+r1:'+ '+Math.abs(r1)})(x ${r2>=0?'− '+r2:'+ '+Math.abs(r2)}) = 0.`, `Zeros are α = ${r1} and β = ${r2}.`, `Sum: α + β = ${r1 + r2} and −b/a = −(${b})/1 = ${r1 + r2}.`, `Product: αβ = ${r1 * r2} and c/a = ${c}/1 = ${r1 * r2}. Verified!`],
+            answerText: `Zeros: ${r1}, ${r2}`
+          };
+        }
+        if (type === 'SA' || type === 'LA') {
+          const r1 = rInt(rng, 1, 5), r2 = rInt(rng, 2, 6);
+          const b = -(r1 + r2), c = r1 * r2;
+          const sumSq = r1*r1 + r2*r2;
+          return {
+            prompt: `If α and β are the zeros of <i>p(x) = ${fmtQuad(1, b, c)}</i>, find the value of α² + β² and form a quadratic polynomial whose zeros are 2α and 2β.`,
+            steps: [`Here α + β = ${r1 + r2} and αβ = ${r1 * r2}.`, `α² + β² = (α + β)² − 2αβ = (${r1 + r2})² − 2(${r1 * r2}) = ${sumSq}.`, `For new zeros 2α, 2β: New Sum = 2(α + β) = ${2*(r1+r2)}, New Product = 4αβ = ${4*r1*r2}.`, `Required polynomial: ${fmtQuad(1, -2*(r1+r2), 4*r1*r2)}.`],
+            answerText: `α²+β² = ${sumSq}; Poly: ${fmtQuad(1, -2*(r1+r2), 4*r1*r2)}`
+          };
+        }
+        const t1 = rInt(rng, 1, 3), t2 = rInt(rng, 4, 7);
+        const b = -(t1 + t2), c = t1 * t2;
+        return {
+          prompt: `<b>Case Study (Parabolic Water Fountain):</b><br>The path of a water jet from a fountain is modelled by <i>p(x) = −(${fmtQuad(1, b, c)})</i>, where x is horizontal distance (in m).<br>(i) Find the points where the jet hits the ground (zeros of p(x)).<br>(ii) What is the sum and product of the zeros?`,
+          visual: svgParabola(2),
+          steps: [`(i) Set p(x) = 0 ⇒ ${fmtQuad(1, b, c)} = 0 ⇒ (x − ${t1})(x − ${t2}) = 0.`, `Zeros are x = ${t1} m and x = ${t2} m.`, `(ii) Sum of zeros = ${t1 + t2}, Product of zeros = ${t1 * t2}.`],
+          answerText: `Zeros: ${t1}, ${t2}`
+        };
+      }
+
+      if (chId === 3) {
+        if (type === 'MCQ') {
+          if (idx % 3 === 0) {
+            const a1 = rInt(rng, 2, 5), b1 = rInt(rng, 2, 6), c1 = rInt(rng, 3, 12);
+            const m = rInt(rng, 2, 4);
+            const mode = idx % 2 === 0 ? 'parallel' : 'coincident';
+            const a2 = a1 * m, b2 = b1 * m;
+            const c2 = mode === 'parallel' ? c1 * m + 3 : c1 * m;
+            const ans = mode === 'parallel' ? 'Parallel (No solution)' : 'Coincident (Infinitely many)';
+            const opt = makeOptions(rng, ans, ['Parallel (No solution)', 'Coincident (Infinitely many)', 'Intersecting (Unique solution)', 'Perpendicular']);
+            return {
+              prompt: `The pair of equations <i>${a1}x + ${b1}y = ${c1}</i> and <i>${a2}x + ${b2}y = ${c2}</i> represents lines which are:`,
+              ...opt,
+              steps: [`a₁/a₂ = ${a1}/${a2} = ${fmtFracTxt(a1,a2)},  b₁/b₂ = ${b1}/${b2} = ${fmtFracTxt(b1,b2)},  c₁/c₂ = ${c1}/${c2}.`, `Applying consistency conditions gives: ${ans}.`],
+              answerText: ans
+            };
+          }
+          const a1 = rInt(rng, 2, 5), b1 = rInt(rng, 2, 5), m = rInt(rng, 2, 4);
+          const a2 = a1 * m, ans = b1 * m;
+          const opt = makeOptions(rng, `${ans}`, [`${ans + 2}`, `${-ans}`, `${b1}`]);
+          return {
+            prompt: `For what value of <i>k</i> does the pair <i>${a1}x + ${b1}y = 7</i> and <i>${a2}x + ky = 29</i> have NO solution?`,
+            ...opt,
+            steps: [`For no solution (parallel lines): a₁/a₂ = b₁/b₂ ≠ c₁/c₂.`, `${a1}/${a2} = ${b1}/k ⇒ 1/${m} = ${b1}/k ⇒ k = ${ans}.`],
+            answerText: `${ans}`
+          };
+        }
+        if (type === 'AR') {
+          const bank = [
+           ['The lines 2x + 3y = 5 and 4x + 6y = 12 are parallel.', 'Two lines a₁x+b₁y=c₁ and a₂x+b₂y=c₂ are parallel if a₁/a₂ = b₁/b₂ ≠ c₁/c₂.', 0],
+           ['x = 2, y = 1 is the unique solution of x + y = 3 and 2x − y = 3.', 'If a₁/a₂ ≠ b₁/b₂, the system is consistent with a unique solution.', 0],
+           ['A consistent system always has infinitely many solutions.', 'A pair of intersecting lines is consistent and has a unique solution.', 3]
+          ];
+          const [A, R, ansIdx] = bank[idx % bank.length];
+          return {
+            prompt: `<b>Assertion (A):</b> ${A}<br><b>Reason (R):</b> ${R}`,
+            options: AR_OPTIONS, answerIndex: ansIdx,
+            steps: [`Check consistency conditions for linear systems.`, `Correct Option: (${String.fromCharCode(65 + ansIdx)})`],
+            answerText: AR_OPTIONS[ansIdx]
+          };
+        }
+        const x0 = rInt(rng, 2, 9), y0 = rInt(rng, 1, 8);
+        const a1 = rInt(rng, 2, 5), b1 = rInt(rng, 1, 4);
+        let a2 = rInt(rng, 1, 4), b2 = rInt(rng, 2, 5);
+        if (a1 * b2 === a2 * b1) b2 += 1;
+        const c1 = a1 * x0 + b1 * y0, c2 = a2 * x0 - b2 * y0;
+        if (type === 'VSA' || type === 'SA') {
+          return {
+            prompt: `Solve the following pair of linear equations by the elimination method:<br><i>${a1}x + ${b1}y = ${c1}</i>  and  <i>${a2}x − ${b2}y = ${c2}</i>`,
+            visual: svgCoordPlot([[0, Math.round(c1/b1)], [x0, y0]], true),
+            steps: [`Multiply eq(1) by ${b2} and eq(2) by ${b1} to eliminate y:`, `(${a1*b2})x + (${b1*b2})y = ${c1*b2}  and  (${a2*b1})x − (${b1*b2})y = ${c2*b1}.`, `Adding both equations: (${a1*b2 + a2*b1})x = ${c1*b2 + c2*b1} ⇒ x = ${x0}.`, `Substituting x = ${x0} in eq(1): ${a1}(${x0}) + ${b1}y = ${c1} ⇒ y = ${y0}.`],
+            answerText: `x = ${x0}, y = ${y0}`
+          };
+        }
+        if (type === 'LA') {
+          const fixed = rInt(rng, 10, 25) * 10, rate = rInt(rng, 8, 16);
+          const d1 = rInt(rng, 10, 15), d2 = rInt(rng, 18, 25);
+          const amt1 = fixed + d1 * rate, amt2 = fixed + d2 * rate;
+          return {
+            prompt: `The taxi charges in a city consist of a fixed charge together with the charge for the distance covered. For a distance of ${d1} km, the charge paid is ₹${amt1} and for a journey of ${d2} km, the charge paid is ₹${amt2}. Find the fixed charge and the charge per km.`,
+            steps: [`Let fixed charge = ₹x and charge per km = ₹y.`, `Equation (1): x + ${d1}y = ${amt1};   Equation (2): x + ${d2}y = ${amt2}.`, `Subtract (1) from (2): ${d2 - d1}y = ${amt2 - amt1} ⇒ y = ₹${rate}/km.`, `Substitute y = ${rate} in (1): x = ${amt1} − ${d1*rate} = ₹${fixed}.`],
+            answerText: `Fixed = ₹${fixed}, Rate = ₹${rate}/km`
+          };
+        }
+        const p1 = rInt(rng, 40, 80), p2 = rInt(rng, 90, 150);
+        const chA = 2 * p1 + 3 * p2, chB = 3 * p1 + 2 * p2;
+        return {
+          prompt: `<b>Case Study (Bookstore Purchase):</b><br>A school buys 2 Maths workbooks and 3 Science kits for ₹${chA}. Next week, it buys 3 Maths workbooks and 2 Science kits for ₹${chB}.<br>(i) Form the pair of linear equations.<br>(ii) Find the cost of 1 Maths workbook and 1 Science kit.`,
+          steps: [`(i) Let cost of 1 Maths workbook = ₹x and 1 Science kit = ₹y. Then 2x + 3y = ${chA} and 3x + 2y = ${chB}.`, `(ii) Adding equations: 5(x + y) = ${chA + chB} ⇒ x + y = ${p1 + p2}.`, `Subtracting: y − x = ${p2 - p1}. Solving gives x = ₹${p1}, y = ₹${p2}.`],
+          answerText: `Maths workbook = ₹${p1}, Science kit = ₹${p2}`
+        };
+      }
+
+      if (chId === 4) {
+        if (type === 'MCQ') {
+          if (idx % 3 === 0) {
+            const a = rInt(rng, 1, 4), b = rInt(rng, -7, 7), c = rInt(rng, -6, 8);
+            const D = b * b - 4 * a * c;
+            const nat = D > 0 ? 'Two distinct real roots' : (D === 0 ? 'Two equal real roots' : 'No real roots');
+            const opt = makeOptions(rng, nat, ['Two distinct real roots', 'Two equal real roots', 'No real roots', 'Infinitely many roots']);
+            return {
+              prompt: `The nature of roots of the quadratic equation <i>${fmtQuad(a, b, c)} = 0</i> is:`,
+              ...opt,
+              steps: [`Discriminant D = b² − 4ac = (${b})² − 4(${a})(${c}) = ${D}.`, `Since D ${D>0?'> 0':D===0?'= 0':'< 0'}, the equation has: ${nat}.`],
+              answerText: nat
+            };
+          }
+          const r = rInt(rng, 2, 7), c = r * r, ans = 2 * r;
+          const opt = makeOptions(rng, `±${ans}`, [`${ans}`, `${ans + 2}`, `±${r}`]);
+          return {
+            prompt: `If the quadratic equation <i>x² + kx + ${c} = 0</i> has two equal real roots, then the value(s) of <i>k</i> are:`,
+            ...opt,
+            steps: [`For equal roots, Discriminant D = b² − 4ac = 0.`, `k² − 4(1)(${c}) = 0 ⇒ k² = ${4 * c} ⇒ k = ±${ans}.`],
+            answerText: `±${ans}`
+          };
+        }
+        if (type === 'AR') {
+          const bank = [
+           ['The equation x² + 5x + 7 = 0 has no real roots.', 'If discriminant D = b² − 4ac < 0, a quadratic equation has no real roots.', 0],
+           ['If ax² + bx + c = 0 has equal roots, then b² = 4ac.', 'Equal roots occur when Discriminant D = 0.', 0],
+           ['(x + 1)² = x² + 2x + 5 is a quadratic equation.', 'An equation of degree 2 in one variable is called a quadratic equation.', 3]
+          ];
+          const [A, R, ansIdx] = bank[idx % bank.length];
+          return {
+            prompt: `<b>Assertion (A):</b> ${A}<br><b>Reason (R):</b> ${R}`,
+            options: AR_OPTIONS, answerIndex: ansIdx,
+            steps: [`Check degree and discriminant b² − 4ac.`, `Correct Option: (${String.fromCharCode(65 + ansIdx)})`],
+            answerText: AR_OPTIONS[ansIdx]
+          };
+        }
+        const r1 = rInt(rng, -6, 6), r2 = rInt(rng, 1, 8);
+        const b = -(r1 + r2), c = r1 * r2;
+        if (type === 'VSA' || type === 'SA') {
+          return {
+            prompt: `Solve the quadratic equation <i>${fmtQuad(1, b, c)} = 0</i> using the quadratic formula.`,
+            steps: [`Here a = 1, b = ${b}, c = ${c}.`, `D = b² − 4ac = (${b})² − 4(1)(${c}) = ${(r1 - r2) ** 2}.`, `x = [−(${b}) ± √${(r1-r2)**2}] / 2 = [${r1+r2} ± ${Math.abs(r1-r2)}] / 2.`, `Roots are x = ${r1} and x = ${r2}.`],
+            answerText: `x = ${r1}, ${r2}`
+          };
+        }
+        if (type === 'LA') {
+          const speed = rInt(rng, 30, 50), inc = 10, dist = speed * (speed + inc) / 5;
+          const tDiff = dist / speed - dist / (speed + inc);
+          return {
+            prompt: `A train travels ${dist} km at a uniform speed. If the speed had been ${inc} km/h more, it would have taken ${tDiff} hours less for the same journey. Find the original speed of the train.`,
+            steps: [`Let original speed = x km/h. Time taken = ${dist}/x hrs.`, `With increased speed (x + ${inc}), time = ${dist}/(x + ${inc}) hrs.`, `Equation: ${dist}/x − ${dist}/(x + ${inc}) = ${tDiff}.`, `Simplifying: x² + ${inc}x − ${speed * (speed + inc)} = 0 ⇒ (x − ${speed})(x + ${speed + inc}) = 0.`, `Since speed > 0, original speed = ${speed} km/h.`],
+            answerText: `${speed} km/h`
+          };
+        }
+        const n = rInt(rng, 6, 14), sumSq = n * n + (n + 1) * (n + 1);
+        return {
+          prompt: `<b>Case Study (Square Garden Design):</b><br>Two adjacent square flower beds have consecutive positive integer side lengths (in m). The sum of their areas is ${sumSq} m².<br>(i) Form the quadratic equation in x (smaller side).<br>(ii) Find the side lengths of both flower beds.`,
+          steps: [`(i) Let sides be x and (x + 1). Then x² + (x + 1)² = ${sumSq}.`, `2x² + 2x + 1 − ${sumSq} = 0 ⇒ x² + x − ${n*(n+1)} = 0.`, `(ii) Factorising: (x − ${n})(x + ${n+1}) = 0 ⇒ x = ${n} m.`, `Sides are ${n} m and ${n + 1} m.`],
+          answerText: `${n} m and ${n + 1} m`
+        };
+      }
+
+      if (chId === 5) {
+        const a = rInt(rng, 3, 15), d = rInt(rng, 2, 9), n = rInt(rng, 10, 25);
+        const an = a + (n - 1) * d;
+        const sn = (n * (2 * a + (n - 1) * d)) / 2;
+        if (type === 'MCQ') {
+          if (idx % 2 === 0) {
+            const opt = makeOptions(rng, `${an}`, [`${an + d}`, `${an - d}`, `${a + n * d}`]);
+            return {
+              prompt: `The ${n}<sup>th</sup> term of the AP: ${a}, ${a+d}, ${a+2*d}, ... is:`,
+              ...opt,
+              steps: [`First term a = ${a}, common difference d = ${d}, n = ${n}.`, `aₙ = a + (n − 1)d = ${a} + (${n - 1})(${d}) = ${an}.`],
+              answerText: `${an}`
+            };
+          }
+          const opt = makeOptions(rng, `${sn}`, [`${sn + d}`, `${sn - a}`, `${n * an}`]);
+          return {
+            prompt: `The sum of the first ${n} terms of the AP: ${a}, ${a+d}, ${a+2*d}, ... is:`,
+            ...opt,
+            steps: [`Sₙ = (n/2)[2a + (n − 1)d] = (${n}/2)[2(${a}) + (${n-1})(${d})] = ${sn}.`],
+            answerText: `${sn}`
+          };
+        }
+        if (type === 'AR') {
+          const bank = [
+           ['Common difference of an AP can be positive, negative, or zero.', 'In an AP, d = aₙ₊₁ − aₙ is a constant.', 0],
+           ['The nth term of an AP is given by aₙ = Sₙ − Sₙ₋₁ (for n > 1).', 'Sₙ represents the sum of first n terms of the AP.', 0],
+           ['2, 4, 8, 16, ... forms an Arithmetic Progression.', 'Successive terms have a constant ratio of 2.', 3]
+          ];
+          const [A, R, ansIdx] = bank[idx % bank.length];
+          return {
+            prompt: `<b>Assertion (A):</b> ${A}<br><b>Reason (R):</b> ${R}`,
+            options: AR_OPTIONS, answerIndex: ansIdx,
+            steps: [`Apply definition of AP: constant difference d = aₙ₊₁ − aₙ.`, `Correct Option: (${String.fromCharCode(65 + ansIdx)})`],
+            answerText: AR_OPTIONS[ansIdx]
+          };
+        }
+        if (type === 'VSA') {
+          return {
+            prompt: `Which term of the AP: ${a}, ${a+d}, ${a+2*d}, ... is ${an}?`,
+            steps: [`Here a = ${a}, d = ${d}, and aₙ = ${an}.`, `${an} = ${a} + (n − 1)${d} ⇒ ${an - a} = (n − 1)${d} ⇒ n − 1 = ${n - 1} ⇒ n = ${n}.`],
+            answerText: `${n}th term`
+          };
+        }
+        if (type === 'SA') {
+          const k = rPick(rng, [3, 4, 5, 6, 7, 9]);
+          const first = Math.ceil(100 / k) * k, last = Math.floor(999 / k) * k;
+          const cnt = Math.floor((last - first) / k) + 1;
+          return {
+            prompt: `How many 3-digit natural numbers are divisible by ${k}?`,
+            steps: [`First 3-digit number divisible by ${k} = ${first}; Last = ${last}.`, `AP: ${first}, ${first+k}, ..., ${last} with a = ${first}, d = ${k}, aₙ = ${last}.`, `${last} = ${first} + (n − 1)${k} ⇒ n = ${cnt}.`],
+            answerText: `${cnt}`
+          };
+        }
+        if (type === 'LA') {
+          const p = rInt(rng, 4, 8), q = rInt(rng, 10, 16);
+          const ap = a + (p - 1) * d, aq = a + (q - 1) * d;
+          return {
+            prompt: `If the ${p}<sup>th</sup> term of an AP is ${ap} and the ${q}<sup>th</sup> term is ${aq}, find the first term, common difference, and the sum of its first ${n} terms.`,
+            steps: [`a + ${p - 1}d = ${ap} ...(1);   a + ${q - 1}d = ${aq} ...(2).`, `Subtract (1) from (2): ${q - p}d = ${aq - ap} ⇒ d = ${d}.`, `From (1): a = ${ap} − ${(p-1)*d} = ${a}.`, `S_${n} = (${n}/2)[2(${a}) + (${n-1})(${d})] = ${sn}.`],
+            answerText: `a = ${a}, d = ${d}, S_${n} = ${sn}`
+          };
+        }
+        const a0 = rInt(rng, 15, 25), inc = rInt(rng, 3, 6), rows = rInt(rng, 8, 12);
+        const totalChairs = (rows * (2 * a0 + (rows - 1) * inc)) / 2;
+        return {
+          prompt: `<b>Case Study (Auditorium Seating):</b><br>An auditorium has ${a0} chairs in the 1st row, ${a0+inc} in the 2nd row, ${a0+2*inc} in the 3rd row, and so on.<br>(i) How many chairs are in the ${rows}<sup>th</sup> row?<br>(ii) Find the total chairs in the first ${rows} rows.`,
+          steps: [`(i) a = ${a0}, d = ${inc}. In ${rows}th row: a_${rows} = ${a0} + (${rows - 1})(${inc}) = ${a0 + (rows - 1)*inc} chairs.`, `(ii) Total chairs S_${rows} = (${rows}/2)[2(${a0}) + (${rows - 1})(${inc})] = ${totalChairs}.`],
+          answerText: `(i) ${a0 + (rows-1)*inc}, (ii) ${totalChairs}`
+        };
+      }
+
+      if (chId === 6) {
+        if (type === 'MCQ') {
+          if (idx % 3 === 0) {
+            const tr = rPick(rng, TRIPLES), k = rInt(rng, 1, 2);
+            const x1 = rInt(rng, -4, 3), y1 = rInt(rng, -4, 3);
+            const x2 = x1 + tr[0] * k, y2 = y1 + tr[1] * k, dist = tr[2] * k;
+            const opt = makeOptions(rng, `${dist} units`, [`${dist+2} units`, `${tr[0]*k + tr[1]*k} units`, `${dist-1} units`]);
+            return {
+              prompt: `The distance between points A(${x1}, ${y1}) and B(${x2}, ${y2}) is:`,
+              visual: svgCoordPlot([[x1, y1], [x2, y2]]), ...opt,
+              steps: [`d = √[(x₂ − x₁)² + (y₂ − y₁)²] = √[(${x2 - x1})² + (${y2 - y1})²] = √${dist*dist} = ${dist} units.`],
+              answerText: `${dist} units`
+            };
+          }
+          const x1 = rInt(rng, -6, 6) * 2, y1 = rInt(rng, -6, 6) * 2;
+          const x2 = rInt(rng, -6, 6) * 2, y2 = rInt(rng, -6, 6) * 2;
+          const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+          const ans = `(${mx}, ${my})`;
+          const opt = makeOptions(rng, ans, [`(${mx+1}, ${my})`, `(${mx}, ${my-1})`, `(${my}, ${mx})`]);
+          return {
+            prompt: `The midpoint of the line segment joining (${x1}, ${y1}) and (${x2}, ${y2}) is:`,
+            ...opt,
+            steps: [`Midpoint = ((${x1}+${x2})/2, (${y1}+${y2})/2) = (${mx}, ${my}).`],
+            answerText: ans
+          };
+        }
+        if (type === 'AR') {
+          const bank = [
+           ['The distance of point P(3, 4) from the origin is 5 units.', 'Distance of P(x, y) from origin (0, 0) is √(x² + y²).', 0],
+           ['The point (0, 5) lies on the x-axis.', 'Any point on the x-axis has y-coordinate equal to 0.', 3],
+           ['Midpoint of A(2, 6) and B(4, 8) is (3, 7).', 'Midpoint of (x₁,y₁) and (x₂,y₂) is ((x₁+x₂)/2, (y₁+y₂)/2).', 0]
+          ];
+          const [A, R, ansIdx] = bank[idx % bank.length];
+          return {
+            prompt: `<b>Assertion (A):</b> ${A}<br><b>Reason (R):</b> ${R}`,
+            options: AR_OPTIONS, answerIndex: ansIdx,
+            steps: [`Verify using Distance / Midpoint / Axis properties.`, `Correct Option: (${String.fromCharCode(65 + ansIdx)})`],
+            answerText: AR_OPTIONS[ansIdx]
+          };
+        }
+        if (type === 'VSA' || type === 'SA') {
+          const m = rInt(rng, 1, 3), n = rInt(rng, 2, 4);
+          const x1 = rInt(rng, -4, 4), y1 = rInt(rng, -4, 4);
+          const dx = rInt(rng, 1, 2) * (m + n), dy = rInt(rng, 1, 2) * (m + n);
+          const x2 = x1 + dx, y2 = y1 + dy;
+          const px = (m * x2 + n * x1) / (m + n), py = (m * y2 + n * y1) / (m + n);
+          return {
+            prompt: `Find the coordinates of the point P which divides the line segment joining A(${x1}, ${y1}) and B(${x2}, ${y2}) internally in the ratio ${m} : ${n}.`,
+            visual: svgCoordPlot([[x1, y1], [x2, y2]]),
+            steps: [`Using Section Formula: P(x, y) = ((mx₂ + nx₁)/(m+n), (my₂ + ny₁)/(m+n)).`, `x = (${m}(${x2}) + ${n}(${x1})) / (${m + n}) = ${px}.`, `y = (${m}(${y2}) + ${n}(${y1})) / (${m + n}) = ${py}.`, `Thus P = (${px}, ${py}).`],
+            answerText: `(${px}, ${py})`
+          };
+        }
+        const ax = rInt(rng, 1, 3), ay = rInt(rng, 1, 3);
+        const bx = ax + 4, by = ay + 1, cx = ax + 6, cy = ay + 5;
+        const dx = ax + cx - bx, dy = ay + cy - by;
+        return {
+          prompt: `<b>${type==='CASE'?'Case Study (Sports Field Layout):':'Long Answer:'}</b> If A(${ax}, ${ay}), B(${bx}, ${by}), C(${cx}, ${cy}), and D(x, y) are the vertices of a parallelogram ABCD taken in order, find the coordinates of D and the intersection point of the diagonals.`,
+          steps: [`Diagonals AC and BD of a parallelogram bisect each other ⇒ Midpoint of AC = Midpoint of BD.`, `Midpoint of AC = ((${ax}+${cx})/2, (${ay}+${cy})/2) = (${(ax+cx)/2}, ${(ay+cy)/2}).`, `(${bx} + x)/2 = ${(ax+cx)/2} ⇒ x = ${dx};   (${by} + y)/2 = ${(ay+cy)/2} ⇒ y = ${dy}.`, `So D = (${dx}, ${dy}) and diagonal intersection = (${(ax+cx)/2}, ${(ay+cy)/2}).`],
+          answerText: `D(${dx}, ${dy})`
+        };
+      }
+
+      if (chId === 7) {
+        const k = rInt(rng, 2, 5), ad = rInt(rng, 2, 5), db = rInt(rng, 3, 7);
+        const ae = ad * k, ec = db * k;
+        if (type === 'MCQ') {
+          const opt = makeOptions(rng, `${ec} cm`, [`${ec + 1.5} cm`, `${db + k} cm`, `${ec + 2} cm`]);
+          return {
+            prompt: `In △ABC, DE ∥ BC. If AD = ${ad} cm, DB = ${db} cm and AE = ${ae} cm, then EC equals:`,
+            visual: svgBPTTri(`${ad} cm`, `${db} cm`, `${ae} cm`, `EC = ?`), ...opt,
+            steps: [`By Basic Proportionality Theorem (Thales Theorem): AD / DB = AE / EC.`, `${ad} / ${db} = ${ae} / EC ⇒ EC = (${ae} × ${db}) / ${ad} = ${ec} cm.`],
+            answerText: `${ec} cm`
+          };
+        }
+        if (type === 'AR') {
+          const bank = [
+           ['If a line is drawn parallel to one side of a triangle intersecting the other two sides, it divides them in the same ratio.', 'This is the Basic Proportionality Theorem (Thales Theorem).', 0],
+           ['Two congruent triangles are always similar.', 'Two similar triangles are always congruent.', 2],
+           ['If △ABC ∼ △DEF and ∠A = 47°, ∠E = 83°, then ∠C = 50°.', 'Corresponding angles of similar triangles are equal and angle sum of a triangle is 180°.', 0]
+          ];
+          const [A, R, ansIdx] = bank[idx % bank.length];
+          return {
+            prompt: `<b>Assertion (A):</b> ${A}<br><b>Reason (R):</b> ${R}`,
+            options: AR_OPTIONS, answerIndex: ansIdx,
+            steps: [`Apply similarity criteria (AAA, SAS, SSS) and BPT.`, `Correct Option: (${String.fromCharCode(65 + ansIdx)})`],
+            answerText: AR_OPTIONS[ansIdx]
+          };
+        }
+        if (type === 'VSA' || type === 'SA') {
+          return {
+            prompt: `In △ABC, DE ∥ BC such that AD = ${ad} cm, DB = ${db} cm and AC = ${ae + ec} cm. Find AE.`,
+            visual: svgBPTTri(`${ad}`, `${db}`, `AE = ?`, `AC=${ae+ec}`),
+            steps: [`By BPT corollary: AD / AB = AE / AC.`, `AB = AD + DB = ${ad} + ${db} = ${ad + db} cm.`, `${ad} / ${ad + db} = AE / ${ae + ec} ⇒ AE = ${ae} cm.`],
+            answerText: `${ae} cm`
+          };
+        }
+        if (type === 'LA') {
+          return {
+            prompt: `State and prove the Basic Proportionality Theorem (Thales Theorem): If a line is drawn parallel to one side of a triangle to intersect the other two sides in distinct points, the other two sides are divided in the same ratio.`,
+            visual: svgBPTTri(`AD`, `DB`, `AE`, `EC`),
+            steps: [`Given: △ABC with DE ∥ BC intersecting AB at D and AC at E. To prove: AD/DB = AE/EC.`, `Construction: Join BE and CD; draw DM ⊥ AC and EN ⊥ AB.`, `ar(△ADE)/ar(△BDE) = (½·AD·EN)/(½·DB·EN) = AD/DB ... (1)`, `ar(△ADE)/ar(△CDE) = (½·AE·DM)/(½·EC·DM) = AE/EC ... (2)`, `Since △BDE and △CDE lie on the same base DE and between same parallels DE ∥ BC, ar(△BDE) = ar(△CDE). Hence AD/DB = AE/EC.`],
+            answerText: `Theorem Proved`
+          };
+        }
+        const hPole = rInt(rng, 4, 8), sPole = rInt(rng, 2, 5), m = rInt(rng, 4, 9);
+        return {
+          prompt: `<b>Case Study (Shadow Measurement):</b><br>A vertical pole of height ${hPole} m casts a shadow ${sPole} m long on the ground. At the same time, a tower casts a shadow ${sPole * m} m long.<br>(i) Which similarity criterion applies to the two sun-ray triangles?<br>(ii) Find the height of the tower.`,
+          steps: [`(i) Both triangles are right-angled (90°) and have equal sun elevation angles ⇒ AA Similarity Criterion.`, `(ii) Ratio of heights = Ratio of shadows ⇒ H / ${hPole} = ${sPole * m} / ${sPole} ⇒ H = ${hPole * m} m.`],
+          answerText: `(i) AA Similarity, (ii) ${hPole * m} m`
+        };
+      }
+
+      if (chId === 8) {
+        if (type === 'MCQ') {
+          if (idx % 2 === 0) {
+            const tr = rPick(rng, TRIPLES), k = rInt(rng, 1, 2);
+            const r = tr[0] * k, pt = tr[1] * k, op = tr[2] * k;
+            const opt = makeOptions(rng, `${r} cm`, [`${r + 2} cm`, `${op - pt} cm`, `${r + 3} cm`]);
+            return {
+              prompt: `From a point P, the length of the tangent PT to a circle is ${pt} cm and the distance of P from the centre O is ${op} cm. The radius of the circle is:`,
+              visual: svgCircleTangent(`r = ?`, `PT=${pt}`, `OP=${op}`), ...opt,
+              steps: [`Since tangent ⊥ radius at point of contact, ∠OTP = 90°.`, `By Pythagoras Theorem: OT² + PT² = OP² ⇒ r² = ${op}² − ${pt}² = ${r*r} ⇒ r = ${r} cm.`],
+              answerText: `${r} cm`
+            };
+          }
+          const angP = rPick(rng, [50, 60, 70, 80, 100, 110]);
+          const angO = 180 - angP;
+          const opt = makeOptions(rng, `${angO}°`, [`${angP}°`, `${90 - angP/2}°`, `${angO - 20}°`]);
+          return {
+            prompt: `If tangents PA and PB from a point P to a circle with centre O are inclined to each other at angle ${angP}°, then ∠AOB equals:`,
+            visual: svgCircleTangent('', '', '', true, '∠AOB=?', `${angP}°`), ...opt,
+            steps: [`In quadrilateral OAPB, ∠OAP = ∠OBP = 90° (radius ⊥ tangent).`, `Therefore ∠AOB + ∠APB = 180° ⇒ ∠AOB = 180° − ${angP}° = ${angO}°.`],
+            answerText: `${angO}°`
+          };
+        }
+        if (type === 'AR') {
+          const bank = [
+           ['The tangent at any point of a circle is perpendicular to the radius through the point of contact.', 'There can be infinitely many tangents drawn from an external point to a circle.', 2],
+           ['The lengths of two tangents drawn from an external point to a circle are equal.', '△OAP and △OBP are congruent by RHS criterion.', 0],
+           ['A circle can have at most two parallel tangents.', 'Parallel tangents touch the circle at the endpoints of a diameter.', 0]
+          ];
+          const [A, R, ansIdx] = bank[idx % bank.length];
+          return {
+            prompt: `<b>Assertion (A):</b> ${A}<br><b>Reason (R):</b> ${R}`,
+            options: AR_OPTIONS, answerIndex: ansIdx,
+            steps: [`Apply Circle Theorems 10.1 & 10.2.`, `Correct Option: (${String.fromCharCode(65 + ansIdx)})`],
+            answerText: AR_OPTIONS[ansIdx]
+          };
+        }
+        if (type === 'VSA' || type === 'SA') {
+          const ab = rInt(rng, 5, 9), bc = rInt(rng, 6, 11), cd = rInt(rng, 4, 8);
+          const ad = ab + cd - bc;
+          return {
+            prompt: `A quadrilateral ABCD is drawn to circumscribe a circle. If AB = ${ab} cm, BC = ${bc} cm and CD = ${cd} cm, find AD.`,
+            steps: [`Property: Opposite sides of a quadrilateral circumscribing a circle sum equally: AB + CD = AD + BC.`, `${ab} + ${cd} = AD + ${bc} ⇒ AD = ${ab + cd - bc} cm.`],
+            answerText: `${ad} cm`
+          };
+        }
+        const tr = rPick(rng, TRIPLES), k = rInt(rng, 1, 2);
+        const r = tr[0] * k, halfChord = tr[1] * k, R = tr[2] * k;
+        return {
+          prompt: `<b>${type==='CASE'?'Case Study (Concentric Circular Tracks):':'Long Answer:'}</b> Two concentric circles are of radii ${R} cm and ${r} cm. Find the length of the chord of the larger circle which touches the smaller circle. Also prove Theorem 10.2 (equal tangents).`,
+          steps: [`Let chord AB of larger circle touch smaller circle at M. Then OM ⊥ AB and M bisects AB.`, `In right △OMA: AM = √(OA² − OM²) = √(${R}² − ${r}²) = ${halfChord} cm.`, `Length of chord AB = 2 × AM = ${2 * halfChord} cm.`, `Theorem 10.2: △OAP ≅ △OBP (RHS) ⇒ PA = PB.`],
+          answerText: `${2 * halfChord} cm`
+        };
+      }
+
+      if (chId === 9) {
+        if (type === 'MCQ') {
+          if (idx % 2 === 0) {
+            const tr = rPick(rng, TRIPLES);
+            const p = tr[0], b = tr[1], h = tr[2];
+            const ans = `${p}/${h}`;
+            const opt = makeOptions(rng, ans, [`${b}/${h}`, `${p}/${b}`, `${h}/${p}`]);
+            return {
+              prompt: `If tan θ = ${p}/${b} (θ acute), then the value of sin θ is:`,
+              visual: svgRightTri(`${b}k`, `${p}k`, `${h}k`), ...opt,
+              steps: [`Let Perpendicular = ${p}k, Base = ${b}k. Hypotenuse = √(${p}²+${b}²)k = ${h}k.`, `sin θ = Perpendicular / Hypotenuse = ${p}/${h}.`],
+              answerText: ans
+            };
+          }
+          const k = rInt(rng, 3, 12);
+          const ans = `${k}`;
+          const opt = makeOptions(rng, ans, [`${-k}`, `${k * 2}`, `1`]);
+          return {
+            prompt: `The value of <i>${k} sec²A − ${k} tan²A</i> is:`,
+            ...opt,
+            steps: [`Factor out ${k}: ${k}(sec²A − tan²A).`, `Using identity sec²A − tan²A = 1, value = ${k}(1) = ${k}.`],
+            answerText: ans
+          };
+        }
+        if (type === 'AR') {
+          const bank = [
+           ['The value of sin θ increases from 0 to 1 as θ increases from 0° to 90°.', 'sin 0° = 0, sin 30° = 1/2, sin 45° = 1/√2, sin 60° = √3/2, sin 90° = 1.', 0],
+           ['sin²θ + cos²θ = 1 holds true for all values of θ.', 'Pythagorean identity is derived from P² + B² = H².', 0],
+           ['The value of sin θ can be 4/3 for some acute angle θ.', 'In a right triangle, the hypotenuse is always the longest side.', 3]
+          ];
+          const [A, R, ansIdx] = bank[idx % bank.length];
+          return {
+            prompt: `<b>Assertion (A):</b> ${A}<br><b>Reason (R):</b> ${R}`,
+            options: AR_OPTIONS, answerIndex: ansIdx,
+            steps: [`Apply Trig definitions & bounds.`, `Correct Option: (${String.fromCharCode(65 + ansIdx)})`],
+            answerText: AR_OPTIONS[ansIdx]
+          };
+        }
+        if (type === 'VSA') {
+          return {
+            prompt: `If sin(A − B) = ½ and cos(A + B) = ½ (0° < A + B ≤ 90°, A > B), find A and B.`,
+            steps: [`sin(A − B) = 1/2 = sin 30° ⇒ A − B = 30° ... (1)`, `cos(A + B) = 1/2 = cos 60° ⇒ A + B = 60° ... (2)`, `Adding (1) and (2): 2A = 90° ⇒ A = 45°. Thus B = 15°.`],
+            answerText: `A = 45°, B = 15°`
+          };
+        }
+        if (type === 'SA' || type === 'LA') {
+          const identities = [
+           ['Prove that: (cosec θ − cot θ)² = (1 − cos θ) / (1 + cos θ)',
+            ['LHS = (1/sin θ − cos θ/sin θ)² = (1 − cos θ)² / sin²θ.', 'Substitute sin²θ = 1 − cos²θ = (1 − cos θ)(1 + cos θ).', 'Cancel (1 − cos θ) to obtain (1 − cos θ)/(1 + cos θ) = RHS.']],
+           ['Prove that: cos A / (1 + sin A) + (1 + sin A) / cos A = 2 sec A',
+            ['Take LCM: [cos²A + (1 + sin A)²] / [cos A(1 + sin A)].', 'Expand: [cos²A + 1 + 2sin A + sin²A] / [cos A(1 + sin A)].', 'Since cos²A + sin²A = 1, numerator = 2(1 + sin A). Cancel (1 + sin A) ⇒ 2/cos A = 2 sec A = RHS.']],
+           ['Prove that: (sin A + cosec A)² + (cos A + sec A)² = 7 + tan²A + cot²A',
+            ['Expand both squares: sin²A + cosec²A + 2 + cos²A + sec²A + 2.', 'Use sin²A + cos²A = 1, cosec²A = 1 + cot²A, sec²A = 1 + tan²A.', 'Sum = (1 + 2 + 2) + (1 + cot²A) + (1 + tan²A) = 7 + tan²A + cot²A = RHS.']]
+          ];
+          const [p, steps] = identities[idx % identities.length];
+          return { prompt: p, steps, answerText: 'Identity Proved' };
+        }
+        const tr = rPick(rng, TRIPLES), p = tr[0], b = tr[1], h = tr[2];
+        return {
+          prompt: `<b>Case Study (Roof Ramp Slope):</b><br>An architect designs a right-angled ramp triangle ABC (∠B = 90°) with base BC = ${b} m and height AB = ${p} m.<br>(i) Find AC (ramp length).<br>(ii) Compute sin²C + cos²C.`,
+          visual: svgRightTri(`${b} m`, `${p} m`, `AC = ?`, 'C'),
+          steps: [`(i) AC = √(${p}² + ${b}²) = ${h} m.`, `(ii) sin C = ${p}/${h}, cos C = ${b}/${h} ⇒ sin²C + cos²C = (${p*p}+${b*b})/${h*h} = 1.`],
+          answerText: `(i) ${h} m, (ii) 1`
+        };
+      }
+
+      if (chId === 10) {
+        const dist = rInt(rng, 10, 45);
+        const ang = rPick(rng, [30, 45, 60]);
+        const hAns = ang === 45 ? `${dist} m` : (ang === 60 ? `${dist}√3 m` : `${dist}/√3 m`);
+        if (type === 'MCQ') {
+          const opt = makeOptions(rng, hAns, [`${dist} m`, `${dist}√3 m`, `${dist}√2 m`, `${dist}/√3 m`]);
+          return {
+            prompt: `The angle of elevation of the top of a tower from a point on the ground, which is ${dist} m away from the foot of the tower, is ${ang}°. The height of the tower is:`,
+            visual: svgRightTri(`${dist} m`, `h = ?`, `Line of sight`, `${ang}°`), ...opt,
+            steps: [`tan ${ang}° = Height / Base = h / ${dist}.`, `h = ${dist} × tan ${ang}° = ${hAns}.`],
+            answerText: hAns
+          };
+        }
+        if (type === 'AR') {
+          const bank = [
+           ['If the height of a tower and the length of its shadow are equal, the sun’s altitude is 45°.', 'tan 45° = 1 = Height / Shadow.', 0],
+           ['As the sun’s altitude increases from 30° to 60°, the shadow of a vertical pole increases.', 'tan θ increases with θ, so Shadow = Height / tan θ decreases.', 3]
+          ];
+          const [A, R, ansIdx] = bank[idx % bank.length];
+          return {
+            prompt: `<b>Assertion (A):</b> ${A}<br><b>Reason (R):</b> ${R}`,
+            options: AR_OPTIONS, answerIndex: ansIdx,
+            steps: [`Compare height-to-shadow ratio with tan θ.`, `Correct Option: (${String.fromCharCode(65 + ansIdx)})`],
+            answerText: AR_OPTIONS[ansIdx]
+          };
+        }
+        if (type === 'VSA' || type === 'SA') {
+          const h = rInt(rng, 15, 60);
+          return {
+            prompt: `A kite is flying at a height of ${h} m above the ground. The string attached to the kite makes an angle of 30° with the ground. Assuming no slack in the string, find the length of the string.`,
+            visual: svgRightTri(`Ground`, `${h} m`, `String = ?`, `30°`),
+            steps: [`sin 30° = Height / Length of string ⇒ 1/2 = ${h} / L.`, `L = 2 × ${h} = ${2 * h} m.`],
+            answerText: `${2 * h} m`
+          };
+        }
+        const hL = rInt(rng, 40, 80);
+        return {
+          prompt: `<b>${type==='CASE'?'Case Study (Lighthouse Observation):':'Long Answer:'}</b> As observed from the top of a ${hL} m high lighthouse from sea-level, the angles of depression of two ships on opposite sides of the lighthouse are 30° and 45°. Find the distance between the two ships.`,
+          steps: [`Distance of first ship (45°): d₁ = ${hL} / tan 45° = ${hL} m.`, `Distance of second ship (30°): d₂ = ${hL} / tan 30° = ${hL}√3 m.`, `Total distance between ships = d₁ + d₂ = ${hL}(1 + √3) m.`],
+          answerText: `${hL}(1 + √3) m`
+        };
+      }
+
+      if (chId === 11) {
+        const r = rPick(rng, [7, 14, 21, 28]);
+        const ang = rPick(rng, [30, 60, 90, 120]);
+        const areaNum = (ang / 360) * (22 / 7) * r * r;
+        const arcLen = (ang / 360) * 2 * (22 / 7) * r;
+        if (type === 'MCQ') {
+          const askArc = idx % 2 === 0;
+          const ans = askArc ? `${+arcLen.toFixed(2)} cm` : `${+areaNum.toFixed(2)} cm²`;
+          const opt = makeOptions(rng, ans, [
+            askArc ? `${+(arcLen*2).toFixed(2)} cm` : `${+(areaNum/2).toFixed(2)} cm²`,
+            askArc ? `${+(arcLen+7).toFixed(2)} cm` : `${+(areaNum+22).toFixed(2)} cm²`,
+            askArc ? `${+(arcLen/2).toFixed(2)} cm` : `${+(areaNum*2).toFixed(2)} cm²`
+          ]);
+          return {
+            prompt: `In a circle of radius ${r} cm, an arc subtends an angle of ${ang}° at the centre. The ${askArc?'length of the arc':'area of the sector'} is (use π = 22/7):`,
+            visual: svgSector(`${r} cm`, `${ang}°`), ...opt,
+            steps: [askArc ? `Arc length = (θ/360°) × 2πr = (${ang}/360) × 2 × (22/7) × ${r} = ${+arcLen.toFixed(2)} cm.` : `Sector Area = (θ/360°) × πr² = (${ang}/360) × (22/7) × ${r}² = ${+areaNum.toFixed(2)} cm².`],
+            answerText: ans
+          };
+        }
+        if (type === 'AR') {
+          const bank = [
+           ['In a clock, the minute hand sweeps an angle of 30° in 5 minutes.', 'Minute hand completes 360° in 60 minutes, i.e., 6° per minute.', 0],
+           ['The area of a quadrant of radius r is πr²/2.', 'A quadrant subtends 90° at the centre, so area = (90/360)πr² = πr²/4.', 3]
+          ];
+          const [A, R, ansIdx] = bank[idx % bank.length];
+          return {
+            prompt: `<b>Assertion (A):</b> ${A}<br><b>Reason (R):</b> ${R}`,
+            options: AR_OPTIONS, answerIndex: ansIdx,
+            steps: [`Apply sector & arc formulas.`, `Correct Option: (${String.fromCharCode(65 + ansIdx)})`],
+            answerText: AR_OPTIONS[ansIdx]
+          };
+        }
+        if (type === 'VSA') {
+          const mins = rPick(rng, [5, 10, 15, 20]);
+          const areaClock = (mins * 6 / 360) * (22 / 7) * r * r;
+          return {
+            prompt: `The length of the minute hand of a clock is ${r} cm. Find the area swept by the minute hand in ${mins} minutes (use π = 22/7).`,
+            steps: [`Angle swept in ${mins} minutes = ${mins} × 6° = ${mins * 6}°.`, `Area = (${mins*6}/360) × (22/7) × ${r} × ${r} = ${+areaClock.toFixed(2)} cm².`],
+            answerText: `${+areaClock.toFixed(2)} cm²`
+          };
+        }
+        const areaSeg90 = (0.25 * (22 / 7) * r * r) - (0.5 * r * r);
+        return {
+          prompt: `<b>${type==='CASE'?'Case Study (Circular Garden Sector):':'Problem:'}</b> A chord of a circle of radius ${r} cm subtends a right angle (90°) at the centre. Find the area of the corresponding minor segment and major sector (use π = 22/7).`,
+          visual: svgSector(`${r} cm`, `90°`),
+          steps: [`Area of minor sector (90°) = (90/360) × (22/7) × ${r}² = ${+(0.25*(22/7)*r*r).toFixed(2)} cm².`, `Area of right △OAB = ½ × ${r} × ${r} = ${0.5*r*r} cm².`, `Area of minor segment = ${+areaSeg90.toFixed(2)} cm².`, `Area of major sector (270°) = (270/360) × (22/7) × ${r}² = ${+(0.75*(22/7)*r*r).toFixed(2)} cm².`],
+          answerText: `Minor segment = ${+areaSeg90.toFixed(2)} cm²`
+        };
+      }
+
+      if (chId === 12) {
+        if (type === 'MCQ') {
+          const side = rInt(rng, 3, 9), vol = side ** 3, tsa = 10 * side * side;
+          const opt = makeOptions(rng, `${tsa} cm²`, [`${12*side*side} cm²`, `${8*side*side} cm²`, `${6*side*side} cm²`]);
+          return {
+            prompt: `Two cubes each of volume ${vol} cm³ are joined end to end. The total surface area of the resulting cuboid is:`,
+            ...opt,
+            steps: [`Side of each cube a = ∛${vol} = ${side} cm.`, `Resulting cuboid dimensions: l = ${2*side} cm, b = ${side} cm, h = ${side} cm.`, `TSA = 2(lb + bh + hl) = 2(${2*side*side} + ${side*side} + ${2*side*side}) = ${tsa} cm².`],
+            answerText: `${tsa} cm²`
+          };
+        }
+        if (type === 'AR') {
+          const bank = [
+           ['If the radius of a sphere is doubled, its surface area becomes four times.', 'Surface area of a sphere = 4πr².', 0],
+           ['When a cone is mounted on a hemisphere of same radius, TSA = TSA(cone) + TSA(hemisphere).', 'The common circular base is hidden inside, so TSA = CSA(cone) + CSA(hemisphere).', 3]
+          ];
+          const [A, R, ansIdx] = bank[idx % bank.length];
+          return {
+            prompt: `<b>Assertion (A):</b> ${A}<br><b>Reason (R):</b> ${R}`,
+            options: AR_OPTIONS, answerIndex: ansIdx,
+            steps: [`Check hidden base surface area rules.`, `Correct Option: (${String.fromCharCode(65 + ansIdx)})`],
+            answerText: AR_OPTIONS[ansIdx]
+          };
+        }
+        const r = rPick(rng, [3, 5, 6, 7]), h = rPick(rng, [4, 12, 8, 24]);
+        const l = Math.round(Math.sqrt(r*r + h*h) * 100) / 100;
+        const volToy = (1/3) * (22/7) * r * r * h + (2/3) * (22/7) * r ** 3;
+        return {
+          prompt: `<b>${type==='CASE'?'Case Study (Wooden Toy):':'Problem:'}</b> A toy is in the form of a cone of radius ${r} cm mounted on a hemisphere of the same radius. The height of the conical part is ${h} cm. Find the volume of the toy (use π = 22/7) and express the formula for its Total Surface Area.`,
+          visual: svgSolidCombo('cone-hemi', `r = ${r}`, `h = ${h}`),
+          steps: [`Volume = Vol(cone) + Vol(hemisphere) = (1/3)πr²h + (2/3)πr³ = (1/3)πr²(h + 2r).`, `Vol = (1/3) × (22/7) × ${r*r} × (${h} + ${2*r}) = ${+volToy.toFixed(2)} cm³.`, `Slant height l = √(${r}² + ${h}²) ≈ ${l} cm;  TSA = πrl + 2πr² = πr(l + 2r).`],
+          answerText: `Volume ≈ ${+volToy.toFixed(2)} cm³`
+        };
+      }
+
+      if (chId === 13) {
+        if (type === 'MCQ') {
+          if (idx % 2 === 0) {
+            const mean = rInt(rng, 20, 45), median = mean + rInt(rng, 2, 6);
+            const mode = 3 * median - 2 * mean;
+            const opt = makeOptions(rng, `${mode}`, [`${mode + 3}`, `${mode - 2}`, `${Math.round((mean+median)/2)}`]);
+            return {
+              prompt: `If the Mean and Median of a moderately skewed distribution are ${mean} and ${median} respectively, then its Mode is:`,
+              ...opt,
+              steps: [`Using empirical relationship: Mode = 3 Median − 2 Mean.`, `Mode = 3(${median}) − 2(${mean}) = ${3*median} − ${2*mean} = ${mode}.`],
+              answerText: `${mode}`
+            };
+          }
+          const f = [rInt(rng, 4, 8), rInt(rng, 6, 10), rInt(rng, 14, 22), rInt(rng, 7, 11), rInt(rng, 3, 6)];
+          const opt = makeOptions(rng, `20 − 30`, ['0 − 10', '10 − 20', '30 − 40', '40 − 50']);
+          return {
+            prompt: `For the frequency distribution below, the modal class is:<br><table class="stat-table"><tr><th>Class</th><td>0–10</td><td>10–20</td><td>20–30</td><td>30–40</td><td>40–50</td></tr><tr><th>Freq</th><td>${f[0]}</td><td>${f[1]}</td><td>${f[2]}</td><td>${f[3]}</td><td>${f[4]}</td></tr></table>`,
+            ...opt,
+            steps: [`The modal class is the class interval with the highest frequency.`, `Maximum frequency is ${f[2]}, which belongs to class 20 − 30.`],
+            answerText: `20 − 30`
+          };
+        }
+        if (type === 'AR') {
+          const bank = [
+           ['Empirical relation is Mode = 3 Median − 2 Mean.', 'For a symmetric distribution, Mean = Median = Mode.', 0],
+           ['Class mark of interval 15 − 25 is 20.', 'Class mark = (Upper limit − Lower limit)/2.', 2]
+          ];
+          const [A, R, ansIdx] = bank[idx % bank.length];
+          return {
+            prompt: `<b>Assertion (A):</b> ${A}<br><b>Reason (R):</b> ${R}`,
+            options: AR_OPTIONS, answerIndex: ansIdx,
+            steps: [`Verify statistical formulas.`, `Correct Option: (${String.fromCharCode(65 + ansIdx)})`],
+            answerText: AR_OPTIONS[ansIdx]
+          };
+        }
+        const f0 = rInt(rng, 5, 9), f1 = rInt(rng, 14, 20), f2 = rInt(rng, 6, 10), f3 = rInt(rng, 3, 6), f4 = rInt(rng, 2, 5);
+        const freqs = [f3, f0, f1, f2, f4];
+        const mids = [5, 15, 25, 35, 45];
+        const N = freqs.reduce((s, v) => s + v, 0);
+        const sumFx = freqs.reduce((s, v, i) => s + v * mids[i], 0);
+        const meanVal = +(sumFx / N).toFixed(2);
+        const modeVal = +(20 + ((f1 - f0) / (2 * f1 - f0 - f2)) * 10).toFixed(2);
+        return {
+          prompt: `<b>${type==='CASE'?'Case Study (Daily Pocket Allowance):':'Problem:'}</b> Find the Mean and Mode of the following grouped data:<br><table class="stat-table"><tr><th>Class Interval</th><td>0–10</td><td>10–20</td><td>20–30</td><td>30–40</td><td>40–50</td></tr><tr><th>Frequency (fᵢ)</th><td>${freqs[0]}</td><td>${freqs[1]}</td><td>${freqs[2]}</td><td>${freqs[3]}</td><td>${freqs[4]}</td></tr></table>`,
+          steps: [`Class marks xᵢ: 5, 15, 25, 35, 45. Total N = Σfᵢ = ${N};  Σfᵢxᵢ = ${sumFx}.`, `Mean = Σfᵢxᵢ / N = ${sumFx} / ${N} = ${meanVal}.`, `Modal class = 20–30 (l = 20, h = 10, f₁ = ${f1}, f₀ = ${f0}, f₂ = ${f2}).`, `Mode = 20 + [(${f1}−${f0}) / (${2*f1}−${f0}−${f2})] × 10 = ${modeVal}.`],
+          answerText: `Mean = ${meanVal}, Mode = ${modeVal}`
+        };
+      }
+
+      if (chId === 14) {
+        if (type === 'MCQ') {
+          if (idx % 3 === 0) {
+            const p = rInt(rng, 12, 85) / 100;
+            const comp = +(1 - p).toFixed(2);
+            const opt = makeOptions(rng, `${comp}`, [`${p}`, `${+(comp+0.1).toFixed(2)}`, `${+(1+p).toFixed(2)}`]);
+            return {
+              prompt: `If P(E) = ${p}, what is the probability of 'not E', i.e., P(Ē)?`,
+              ...opt,
+              steps: [`P(E) + P(Ē) = 1 ⇒ P(Ē) = 1 − ${p} = ${comp}.`],
+              answerText: `${comp}`
+            };
+          }
+          if (idx % 3 === 1) {
+            const items = [
+             ['a red face card', 6, 52], ['a black king', 2, 52], ['an ace', 4, 52],
+             ['a queen of hearts', 1, 52], ['neither a king nor a queen', 44, 52]
+            ];
+            const [lbl, num, den] = items[idx % items.length];
+            const ans = fmtFracTxt(num, den);
+            const opt = makeOptions(rng, ans, [fmtFracTxt(num+2, den), fmtFracTxt(num+4, den), '1/2']);
+            return {
+              prompt: `One card is drawn at random from a well-shuffled deck of 52 cards. The probability of getting ${lbl} is:`,
+              ...opt,
+              steps: [`Total cards = 52. Favourable outcomes (${lbl}) = ${num}.`, `P = ${num}/52 = ${ans}.`],
+              answerText: ans
+            };
+          }
+          const ans = '1/6';
+          const opt = makeOptions(rng, ans, ['1/12', '1/3', '5/36']);
+          return {
+            prompt: `Two dice are thrown simultaneously. The probability of getting a doublet (same number on both dice) is:`,
+            ...opt,
+            steps: [`Total outcomes = 6 × 6 = 36.`, `Doublets: (1,1), (2,2), (3,3), (4,4), (5,5), (6,6) ⇒ 6 outcomes.`, `P(doublet) = 6/36 = 1/6.`],
+            answerText: ans
+          };
+        }
+        if (type === 'AR') {
+          const bank = [
+           ['The probability of getting 53 Sundays in a leap year is 2/7.', 'A leap year has 366 days = 52 weeks + 2 extra days.', 0],
+           ['Probability of an event can be 1.2.', 'For any event E, 0 ≤ P(E) ≤ 1.', 3],
+           ['Probability of an impossible event is 0.', 'An impossible event has zero favourable outcomes.', 0]
+          ];
+          const [A, R, ansIdx] = bank[idx % bank.length];
+          return {
+            prompt: `<b>Assertion (A):</b> ${A}<br><b>Reason (R):</b> ${R}`,
+            options: AR_OPTIONS, answerIndex: ansIdx,
+            steps: [`Apply probability axioms 0 ≤ P(E) ≤ 1.`, `Correct Option: (${String.fromCharCode(65 + ansIdx)})`],
+            answerText: AR_OPTIONS[ansIdx]
+          };
+        }
+        const red = rInt(rng, 3, 8), blue = rInt(rng, 4, 9), green = rInt(rng, 2, 6);
+        const tot = red + blue + green;
+        return {
+          prompt: `<b>${type==='CASE'?'Case Study (Carnival Bag Draw):':'Problem:'}</b> A bag contains ${red} red balls, ${blue} blue balls, and ${green} green balls. A ball is drawn at random from the bag. Find the probability that the ball drawn is:<br>(i) red  (ii) not blue  (iii) either red or green.`,
+          steps: [`Total balls = ${red} + ${blue} + ${green} = ${tot}.`, `(i) P(red) = ${red}/${tot} = ${fmtFracTxt(red, tot)}.`, `(ii) P(not blue) = (${red}+${green})/${tot} = ${fmtFracTxt(red + green, tot)}.`, `(iii) P(red or green) = ${fmtFracTxt(red + green, tot)}.`],
+          answerText: `P(red) = ${fmtFracTxt(red, tot)}, P(not blue) = ${fmtFracTxt(red + green, tot)}`
+        };
+      }
+    }
+
+    const STORAGE_KEY = 'sunny_rathee_cbse10_maths_v1';
+    let appState = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+    if (!appState.solved) appState.solved = [];
+    if (!appState.bookmarks) appState.bookmarks = [];
+    if (!appState.bestQuiz) appState.bestQuiz = null;
+
+    let currentChapterId = 1;
+    let selectedUnit = 'ALL';
+    let filteredQNums = [];
+    let currentFilteredIdx = 0;
+    let currentQuestion = null;
+    let revealedStepsCount = 0;
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+      updateStatsUI();
+    }
+
+    function updateStatsUI() {
+      document.getElementById('global-mastery-pill').textContent = `Solved: ${appState.solved.length}`;
+      document.getElementById('dash-solved-count').textContent = appState.solved.length;
+      document.getElementById('dash-bookmark-count').textContent = appState.bookmarks.length;
+      document.getElementById('best-quiz-score').textContent = appState.bestQuiz !== null ? `${appState.bestQuiz}%` : '—';
+    }
+
+    let introTimers = [];
+    function runIntroSequence() {
+      const ov = document.getElementById('intro-overlay');
+      ov.classList.remove('hide');
+      ov.style.display = 'flex';
+      ['i-logo','i-step1','i-step2','i-step3','i-step4'].forEach(id => document.getElementById(id).classList.remove('active'));
+      ['dot1','dot2','dot3','dot4'].forEach(id => document.getElementById(id).classList.remove('done'));
+      introTimers.forEach(clearTimeout);
+      introTimers = [
+        setTimeout(() => { document.getElementById('i-logo').classList.add('active'); document.getElementById('dot1').classList.add('done'); }, 150),
+        setTimeout(() => { document.getElementById('i-step1').classList.add('active'); document.getElementById('dot2').classList.add('done'); }, 750),
+        setTimeout(() => { document.getElementById('i-step2').classList.add('active'); }, 1300),
+        setTimeout(() => { document.getElementById('i-step3').classList.add('active'); document.getElementById('dot3').classList.add('done'); }, 1950),
+        setTimeout(() => { document.getElementById('i-step4').classList.add('active'); document.getElementById('dot4').classList.add('done'); }, 2650)
+      ];
+    }
+    function finishIntro() {
+      introTimers.forEach(clearTimeout);
+      const ov = document.getElementById('intro-overlay');
+      ov.classList.add('hide');
+      setTimeout(() => { ov.style.display = 'none'; }, 750);
+    }
+    function replayIntro() { runIntroSequence(); }
+
+    function switchView(view) {
+      document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
+      document.getElementById(`view-${view}`).classList.add('active');
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.view === view));
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function toggleTheme() {
+      const root = document.documentElement;
+      const isDark = root.getAttribute('data-theme') === 'dark';
+      root.setAttribute('data-theme', isDark ? 'light' : 'dark');
+      document.getElementById('theme-btn').textContent = isDark ? '🌙' : '☀️';
+    }
+
+    function renderUnitsStrip() {
+      const el = document.getElementById('units-strip');
+      el.innerHTML = UNITS.map(u => `
+        <div class="unit-chip ${selectedUnit === u.id ? 'active' : ''}" onclick="selectedUnit = (selectedUnit==='${u.id}'?'ALL':'${u.id}'); renderUnitsStrip(); renderChaptersGrid();">
+          <div class="u-marks">${u.marks} MARKS</div>
+          <div class="u-name">${u.name}</div>
+        </div>
+      `).join('');
+    }
+
+    function renderChaptersGrid() {
+      const q = (document.getElementById('chapter-search').value || '').toLowerCase();
+      const grid = document.getElementById('chapters-grid');
+      const list = CHAPTERS.filter(ch => {
+        if (selectedUnit !== 'ALL' && ch.unit !== selectedUnit) return false;
+        return ch.name.toLowerCase().includes(q) || ch.topics.toLowerCase().includes(q);
+      });
+      grid.innerHTML = list.map(ch => {
+        const unit = UNITS.find(u => u.id === ch.unit);
+        const solvedInCh = appState.solved.filter(id => id.startsWith(`${ch.id}-`)).length;
+        const pct = Math.round((solvedInCh / 350) * 100);
+        return `
+          <div class="card ch-card" onclick="openChapterPractice(${ch.id})">
+            <div>
+              <div class="ch-top">
+                <span class="ch-num">CH ${String(ch.id).padStart(2,'0')}</span>
+                <span class="ch-unit-tag">${unit.name} (${unit.marks}M)</span>
+              </div>
+              <h3>${ch.name}</h3>
+              <p class="ch-topics">${ch.topics}</p>
+            </div>
+            <div>
+              <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+              <div class="ch-meta">
+                <span style="color:var(--accent-2);font-weight:700;">350 Questions</span>
+                <span style="color:var(--text-secondary);">${solvedInCh}/350 Solved (${pct}%)</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openChapterPractice(chId) {
+      currentChapterId = chId;
+      document.getElementById('prac-chapter').value = chId;
+      switchView('practice');
+      onPracticeFilterChange(true);
+    }
+
+    function onPracticeFilterChange(resetType) {
+      currentChapterId = Number(document.getElementById('prac-chapter').value);
+      if (resetType) {
+        document.getElementById('prac-type').value = 'ALL';
+        document.getElementById('prac-diff').value = 'ALL';
+      }
+      const fType = document.getElementById('prac-type').value;
+      const fDiff = document.getElementById('prac-diff').value;
+      const onlyBM = document.getElementById('only-bookmarked').checked;
+
+      filteredQNums = [];
+      for (let qNum = 1; qNum <= 350; qNum++) {
+        const m = getQuestionMeta(qNum - 1);
+        if (fType !== 'ALL' && m.type !== fType) continue;
+        if (fDiff !== 'ALL' && m.diff !== fDiff) continue;
+        if (onlyBM && !appState.bookmarks.includes(`${currentChapterId}-${qNum}`)) continue;
+        filteredQNums.push(qNum);
+      }
+
+      document.getElementById('filtered-count-lbl').textContent = `Showing ${filteredQNums.length} Questions`;
+      currentFilteredIdx = 0;
+      renderPalette();
+      loadCurrentQuestion();
+    }
+
+    function renderPalette() {
+      const pal = document.getElementById('q-palette');
+      const slice = filteredQNums.slice(0, 350);
+      if (!slice.length) {
+        pal.innerHTML = '<div style="grid-column:1/-1;color:var(--text-muted);font-size:0.85rem;padding:12px 0;">No questions match this filter.</div>';
+        return;
+      }
+      pal.innerHTML = slice.map((qNum, i) => {
+        const id = `${currentChapterId}-${qNum}`;
+        const cls = ['q-dot', i === currentFilteredIdx ? 'current' : '', appState.solved.includes(id) ? 'solved' : '', appState.bookmarks.includes(id) ? 'bookmarked' : ''].join(' ');
+        return `<button class="${cls}" onclick="selectFilteredIndex(${i})">${qNum}</button>`;
+      }).join('');
+    }
+
+    function selectFilteredIndex(idx) {
+      currentFilteredIdx = idx;
+      renderPalette();
+      loadCurrentQuestion();
+    }
+
+    function jumpToQuestion() {
+      const v = Number(document.getElementById('jump-q-input').value);
+      if (!v || v < 1 || v > 350) return;
+      const found = filteredQNums.indexOf(v);
+      if (found >= 0) selectFilteredIndex(found);
+      else {
+        document.getElementById('prac-type').value = 'ALL';
+        document.getElementById('prac-diff').value = 'ALL';
+        document.getElementById('only-bookmarked').checked = false;
+        onPracticeFilterChange(false);
+        selectFilteredIndex(v - 1);
+      }
+    }
+
+    function stepQuestion(delta) {
+      if (!filteredQNums.length) return;
+      const next = currentFilteredIdx + delta;
+      if (next >= 0 && next < filteredQNums.length) selectFilteredIndex(next);
+    }
+
+    function loadCurrentQuestion() {
+      const box = document.getElementById('q-content');
+      const solBox = document.getElementById('solution-box');
+      solBox.classList.remove('open');
+      solBox.innerHTML = '';
+      revealedStepsCount = 0;
+
+      if (!filteredQNums.length) {
+        box.innerHTML = `<p style="color:var(--text-secondary);">No questions found for the selected filter.</p>`;
+        document.getElementById('q-badges').innerHTML = '';
+        return;
+      }
+
+      const qNum = filteredQNums[currentFilteredIdx];
+      currentQuestion = generateQuestion(currentChapterId, qNum);
+      const ch = CHAPTERS.find(c => c.id === currentChapterId);
+
+      const typeNames = { MCQ:'MCQ', AR:'Assertion–Reason', VSA:'Very Short Answer', SA:'Short Answer', LA:'Long Answer', CASE:'Case-Based' };
+      document.getElementById('q-badges').innerHTML = `
+        <span class="tag tag-type">Q#${qNum} / 350</span>
+        <span class="tag tag-type">${typeNames[currentQuestion.type]}</span>
+        <span class="tag tag-marks">${currentQuestion.marks} ${currentQuestion.marks===1?'Mark':'Marks'}</span>
+        <span class="tag tag-diff-${currentQuestion.diff}">${currentQuestion.diff}</span>
+        <span style="font-size:0.82rem;color:var(--text-muted);font-weight:600;">${ch.name}</span>
+      `;
+      updateActionButtons();
+
+      let html = `<div class="q-prompt">${currentQuestion.prompt}</div>`;
+      if (currentQuestion.visual) html += `<div class="q-visual">${currentQuestion.visual}</div>`;
+      if (currentQuestion.options) {
+        html += `<div class="options-grid" id="prac-options">` + currentQuestion.options.map((opt, idx) => `
+          <button class="opt-btn" onclick="checkPracticeMCQ(${idx}, this)">
+            <span class="opt-key">${String.fromCharCode(65 + idx)}</span><span>${opt}</span>
+          </button>
+        `).join('') + `</div><div id="mcq-feedback" style="font-weight:700;margin-top:8px;"></div>`;
+      }
+      box.innerHTML = html;
+    }
+
+    function checkPracticeMCQ(chosenIdx, btnEl) {
+      const btns = document.querySelectorAll('#prac-options .opt-btn');
+      btns.forEach(b => b.disabled = true);
+      const correctIdx = currentQuestion.answerIndex;
+      const fb = document.getElementById('mcq-feedback');
+      if (chosenIdx === correctIdx) {
+        btnEl.classList.add('correct');
+        fb.innerHTML = `<span style="color:var(--success);">✓ Correct! Well done!</span>`;
+        if (!appState.solved.includes(currentQuestion.id)) {
+          appState.solved.push(currentQuestion.id);
+          saveState(); renderPalette(); renderChaptersGrid(); updateActionButtons();
+        }
+      } else {
+        btnEl.classList.add('wrong');
+        btns[correctIdx].classList.add('correct');
+        fb.innerHTML = `<span style="color:var(--danger);">✕ Incorrect. Correct option is (${String.fromCharCode(65 + correctIdx)}). Check steps below!</span>`;
+        revealAllSteps();
+      }
+    }
+
+    function revealNextStep() {
+      if (!currentQuestion) return;
+      const solBox = document.getElementById('solution-box');
+      solBox.classList.add('open');
+      if (revealedStepsCount < currentQuestion.steps.length) {
+        revealedStepsCount++;
+        renderSolutionSteps();
+      }
+    }
+
+    function revealAllSteps() {
+      if (!currentQuestion) return;
+      const solBox = document.getElementById('solution-box');
+      solBox.classList.add('open');
+      revealedStepsCount = currentQuestion.steps.length;
+      renderSolutionSteps();
+    }
+
+    function renderSolutionSteps() {
+      const solBox = document.getElementById('solution-box');
+      let html = `<h4 style="margin-bottom:12px; color:var(--success);">CBSE Board Step-by-Step Marking Scheme Solution</h4>`;
+      for (let i = 0; i < revealedStepsCount; i++) {
+        html += `<div class="sol-step"><strong>Step ${i + 1}:</strong> ${currentQuestion.steps[i]}</div>`;
+      }
+      if (revealedStepsCount >= currentQuestion.steps.length) {
+        html += `<div class="final-ans-box">Final Answer: ${currentQuestion.answerText}</div>`;
+      }
+      solBox.innerHTML = html;
+    }
+
+    function updateActionButtons() {
+      if (!currentQuestion) return;
+      const isBM = appState.bookmarks.includes(currentQuestion.id);
+      const isSol = appState.solved.includes(currentQuestion.id);
+      document.getElementById('bookmark-btn').textContent = isBM ? '★ Bookmarked' : '☆ Bookmark';
+      document.getElementById('master-btn').textContent = isSol ? '✓ Solved' : '✓ Mark Solved';
+    }
+    function toggleBookmarkCurrent() {
+      if (!currentQuestion) return;
+      const i = appState.bookmarks.indexOf(currentQuestion.id);
+      if (i >= 0) appState.bookmarks.splice(i, 1); else appState.bookmarks.push(currentQuestion.id);
+      saveState(); renderPalette(); updateActionButtons();
+    }
+    function toggleSolvedCurrent() {
+      if (!currentQuestion) return;
+      const i = appState.solved.indexOf(currentQuestion.id);
+      if (i >= 0) appState.solved.splice(i, 1); else appState.solved.push(currentQuestion.id);
+      saveState(); renderPalette(); renderChaptersGrid(); updateActionButtons();
+    }
+
+    let quizState = null;
+    let quizTimerInt = null;
+
+    function startChapterQuiz() {
+      const chId = Number(document.getElementById('quiz-chapter').value);
+      const count = Number(document.getElementById('quiz-count').value);
+      const pool = [];
+      for (let i = 1; i <= 130; i++) pool.push(i);
+      pool.sort(() => Math.random() - 0.5);
+      const qs = pool.slice(0, count).map(qn => generateQuestion(chId, qn));
+      const ch = CHAPTERS.find(c => c.id === chId);
+      launchQuiz(`Chapter ${chId} Quiz: ${ch.name}`, qs, count * 75);
+    }
+
+    function startMixedSprint() {
+      const qs = [];
+      for (let i = 0; i < 15; i++) {
+        const chId = (i % 14) + 1;
+        const qNum = Math.floor(Math.random() * 130) + 1;
+        qs.push(generateQuestion(chId, qNum));
+      }
+      launchQuiz('Mixed 15-Question CBSE Board Sprint', qs, 15 * 60);
+    }
+
+    function startFullBoardMock() {
+      const qs = [];
+      for (let i = 0; i < 18; i++) qs.push(generateQuestion((i % 14) + 1, Math.floor(Math.random()*90)+1));
+      for (let i = 0; i < 2; i++) qs.push(generateQuestion((i * 5) + 2, 91 + Math.floor(Math.random()*40)));
+      for (let i = 0; i < 5; i++) qs.push(generateQuestion((i * 2) + 1, 131 + Math.floor(Math.random()*70)));
+      for (let i = 0; i < 6; i++) qs.push(generateQuestion((i * 2) + 2, 201 + Math.floor(Math.random()*60)));
+      for (let i = 0; i < 4; i++) qs.push(generateQuestion((i * 3) + 3, 261 + Math.floor(Math.random()*50)));
+      for (let i = 0; i < 3; i++) qs.push(generateQuestion((i * 4) + 2, 311 + Math.floor(Math.random()*40)));
+      launchQuiz('CBSE Class X Full 80-Mark Sample Paper (Sections A–E)', qs, 180 * 60);
+    }
+
+    function launchQuiz(title, questions, seconds) {
+      quizState = { title, questions, answers: {}, selfChecked: {}, idx: 0, secondsLeft: seconds };
+      document.getElementById('quiz-lobby').style.display = 'none';
+      document.getElementById('quiz-result').style.display = 'none';
+      document.getElementById('quiz-arena').style.display = 'block';
+      document.getElementById('quiz-title').textContent = title;
+      clearInterval(quizTimerInt);
+      updateTimerDisplay();
+      quizTimerInt = setInterval(() => {
+        quizState.secondsLeft--;
+        updateTimerDisplay();
+        if (quizState.secondsLeft <= 0) submitQuiz();
+      }, 1000);
+      renderQuizQuestion();
+    }
+
+    function updateTimerDisplay() {
+      const m = Math.floor(quizState.secondsLeft / 60);
+      const s = quizState.secondsLeft % 60;
+      document.getElementById('quiz-timer').textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    }
+
+    function renderQuizQuestion() {
+      const q = quizState.questions[quizState.idx];
+      document.getElementById('quiz-progress-txt').textContent = `Question ${quizState.idx + 1} of ${quizState.questions.length} • ${q.type} (${q.marks} Marks)`;
+      const pal = document.getElementById('quiz-palette');
+      pal.innerHTML = quizState.questions.map((_, i) => {
+        const answered = quizState.answers[i] !== undefined || quizState.selfChecked[i];
+        return `<button class="q-dot ${i===quizState.idx?'current':''} ${answered?'solved':''}" onclick="quizState.idx=${i};renderQuizQuestion();">${i+1}</button>`;
+      }).join('');
+
+      let html = `<div style="margin-bottom:10px;" class="badge-row">
+        <span class="tag tag-type">${q.type}</span>
+        <span class="tag tag-marks">${q.marks} ${q.marks===1?'Mark':'Marks'}</span>
+        <span style="font-size:0.85rem;color:var(--text-muted);">${CHAPTERS[q.chId-1].name}</span>
+      </div>
+      <div class="q-prompt">${q.prompt}</div>`;
+      if (q.visual) html += `<div class="q-visual">${q.visual}</div>`;
+
+      if (q.options) {
+        html += `<div class="options-grid">` + q.options.map((opt, oi) => `
+          <button class="opt-btn ${quizState.answers[quizState.idx]===oi?'correct':''}" onclick="quizState.answers[quizState.idx]=${oi};renderQuizQuestion();">
+            <span class="opt-key">${String.fromCharCode(65+oi)}</span><span>${opt}</span>
+          </button>
+        `).join('') + `</div>`;
+      } else {
+        html += `<div style="padding:14px;border-radius:12px;background:var(--bg-elevated);border:1px solid var(--border);">
+          <p style="font-size:0.9rem;color:var(--text-secondary);margin-bottom:10px;">Solve this ${q.marks}-mark subjective question in your notebook, then check below:</p>
+          <label style="cursor:pointer;font-weight:700;"><input type="checkbox" ${quizState.selfChecked[quizState.idx]?'checked':''} onchange="quizState.selfChecked[quizState.idx]=this.checked;renderQuizQuestion();"> Mark as Attempted / Solved</label>
+        </div>`;
+      }
+      document.getElementById('quiz-q-container').innerHTML = html;
+    }
+
+    function navQuiz(d) {
+      const n = quizState.idx + d;
+      if (n >= 0 && n < quizState.questions.length) { quizState.idx = n; renderQuizQuestion(); }
+    }
+
+    function exitQuiz() {
+      clearInterval(quizTimerInt);
+      document.getElementById('quiz-arena').style.display = 'none';
+      document.getElementById('quiz-result').style.display = 'none';
+      document.getElementById('quiz-lobby').style.display = 'block';
+    }
+
+    function submitQuiz() {
+      clearInterval(quizTimerInt);
+      document.getElementById('quiz-arena').style.display = 'none';
+      const resDiv = document.getElementById('quiz-result');
+      resDiv.style.display = 'block';
+
+      let objTotal = 0, objCorrect = 0, totalMarks = 0, earnedMarks = 0;
+      const reviewHTML = quizState.questions.map((q, i) => {
+        totalMarks += q.marks;
+        let status = '';
+        if (q.options) {
+          objTotal++;
+          const chosen = quizState.answers[i];
+          if (chosen === q.answerIndex) {
+            objCorrect++; earnedMarks += q.marks;
+            status = `<span style="color:var(--success);font-weight:700;">✓ Correct (+${q.marks}M)</span>`;
+          } else {
+            status = `<span style="color:var(--danger);font-weight:700;">✕ Wrong (Ans: ${String.fromCharCode(65+q.answerIndex)})</span>`;
+          }
+        } else {
+          if (quizState.selfChecked[i]) earnedMarks += q.marks;
+          status = `<span style="color:var(--accent-2);font-weight:700;">Subjective (${q.marks}M) — Compare with Marking Scheme</span>`;
+        }
+        return `<div class="card" style="margin-bottom:12px;">
+          <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:8px;">
+            <strong>Q${i+1} • ${q.type} (${q.marks}M) • ${CHAPTERS[q.chId-1].name}</strong>
+            ${status}
+          </div>
+          <div style="margin-bottom:8px;">${q.prompt}</div>
+          <div style="font-size:0.88rem;color:var(--success);"><strong>Solution:</strong> ${q.steps.join(' → ')} | <strong>Ans: ${q.answerText}</strong></div>
+        </div>`;
+      }).join('');
+
+      const acc = objTotal > 0 ? Math.round((objCorrect / objTotal) * 100) : Math.round((earnedMarks / totalMarks) * 100);
+      if (appState.bestQuiz === null || acc > appState.bestQuiz) {
+        appState.bestQuiz = acc; saveState();
+      }
+      if (acc >= 70) launchConfetti();
+
+      resDiv.innerHTML = `
+        <div class="card" style="text-align:center;margin-bottom:20px;">
+          <h2 style="font-size:2rem;margin-bottom:6px;">Assessment Complete!</h2>
+          <p style="color:var(--text-secondary);margin-bottom:16px;">${quizState.title}</p>
+          <div style="display:flex;justify-content:center;gap:24px;flex-wrap:wrap;margin-bottom:18px;">
+            <div class="stat-tile"><div class="stat-val">${earnedMarks} / ${totalMarks}</div><div class="stat-lbl">Marks Scored</div></div>
+            <div class="stat-tile"><div class="stat-val">${acc}%</div><div class="stat-lbl">Objective Accuracy</div></div>
+          </div>
+          <button class="btn btn-primary" onclick="exitQuiz()">← Back to Quiz Lobby</button>
+        </div>
+        <h3 style="margin-bottom:12px;">Detailed Solution Review</h3>
+        ${reviewHTML}
+      `;
+    }
+
+    function openFormulaModal(chId) {
+      document.getElementById('formula-ch-select').value = chId;
+      renderFormulaList(chId);
+      document.getElementById('formula-modal').classList.add('open');
+    }
+    function closeFormulaModal() { document.getElementById('formula-modal').classList.remove('open'); }
+    function renderFormulaList(chId) {
+      const ch = CHAPTERS.find(c => c.id === chId);
+      document.getElementById('formula-modal-title').textContent = `Ch ${ch.id}: ${ch.name} — Formula Vault`;
+      document.getElementById('formula-list').innerHTML = ch.formulas.map(([t, f]) => `
+        <div class="formula-item">
+          <div style="font-weight:800;color:var(--accent-2);margin-bottom:3px;">${t}</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:0.92rem;">${f}</div>
+        </div>
+      `).join('');
+    }
+
+    function launchConfetti() {
+      const canvas = document.getElementById('confetti-canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+      const pieces = Array.from({ length: 110 }, () => ({
+        x: Math.random() * canvas.width, y: -20 - Math.random() * 200,
+        r: 4 + Math.random() * 5, dy: 3 + Math.random() * 4, dx: (Math.random() - 0.5) * 4,
+        c: ['#6366f1','#06b6d4','#f59e0b','#10b981','#f43f5e'][Math.floor(Math.random()*5)]
+      }));
+      let frames = 0;
+      function draw() {
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        pieces.forEach(p => {
+          p.x += p.dx; p.y += p.dy;
+          ctx.fillStyle = p.c; ctx.fillRect(p.x, p.y, p.r, p.r * 1.4);
+        });
+        if (++frames < 130) requestAnimationFrame(draw);
+        else ctx.clearRect(0,0,canvas.width,canvas.height);
+      }
+      draw();
+    }
+
+    function init() {
+      const chOpts = CHAPTERS.map(c => `<option value="${c.id}">Ch ${c.id}: ${c.name}</option>`).join('');
+      document.getElementById('prac-chapter').innerHTML = chOpts;
+      document.getElementById('quiz-chapter').innerHTML = chOpts;
+      document.getElementById('formula-ch-select').innerHTML = chOpts;
+      updateStatsUI();
+      renderUnitsStrip();
+      renderChaptersGrid();
+      onPracticeFilterChange(true);
+      runIntroSequence();
+    }
+    init();
+  </script>
+</body>
+</html>
+```
